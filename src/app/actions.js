@@ -2,21 +2,20 @@
 
 /**
  * Server Action to handle lead submission directly to both your custom CRM 
- * and Mailchimp, completely bypassing Make.com.
+ * and MailerLite, completely bypassing Make.com.
  */
 export async function submitLead(formData) {
     const { fullName, email, phone, company, interestedService } = formData;
 
     // Configuration
     const CRM_WEBHOOK_URL = process.env.CRM_WEBHOOK_URL;
-    const MC_API_KEY = process.env.MAILCHIMP_API_KEY;
-    const MC_LIST_ID = process.env.MAILCHIMP_LIST_ID;
+    const ML_API_KEY = process.env.MAILERLITE_API_KEY;
 
     // Track success of different branches
     let crmSuccess = false;
-    let mailchimpSuccess = false;
+    let mailerliteSuccess = false;
 
-    // 1. Post to your Custom CRM Webhook
+    // 1. Post to your Custom CRM Webhook (Kasalang Tagaytay source)
     if (CRM_WEBHOOK_URL) {
         try {
             const crmResponse = await fetch(CRM_WEBHOOK_URL, {
@@ -27,8 +26,11 @@ export async function submitLead(formData) {
                     email: email,
                     phone: phone,
                     company: company,
-                    notes: `Interested in: ${interestedService}`,
+                    notes: `Interested in: ${interestedService}\nLead Source: Kasalang Tagaytay`,
                     source: "Kasalang Tagaytay",
+                    lead_source: "Kasalang Tagaytay",
+                    leadSource: "Kasalang Tagaytay",
+                    "lead-sources": "Kasalang Tagaytay",
                 }),
             });
             crmSuccess = crmResponse.ok;
@@ -36,50 +38,50 @@ export async function submitLead(formData) {
         } catch (err) {
             console.error("Direct CRM Sync Error:", err);
         }
-    } else {
-        console.warn("CRM_WEBHOOK_URL is missing.");
     }
 
-    // 2. Post to Mailchimp API
-    if (MC_API_KEY && MC_LIST_ID) {
+    // 2. Post to MailerLite API
+    if (ML_API_KEY) {
         try {
-            const DATACENTER = MC_API_KEY.split("-")[1];
-            const mcUrl = `https://${DATACENTER}.api.mailchimp.com/3.0/lists/${MC_LIST_ID}/members`;
+            // MailerLite API URL for creating/updating a subscriber
+            const mlUrl = `https://connect.mailerlite.com/api/subscribers`;
 
-            const mcResponse = await fetch(mcUrl, {
+            const mlResponse = await fetch(mlUrl, {
                 method: "POST",
                 headers: {
-                    Authorization: `apikey ${MC_API_KEY}`,
                     "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Authorization": `Bearer ${ML_API_KEY}`,
                 },
                 body: JSON.stringify({
-                    email_address: email,
-                    status: "subscribed",
-                    merge_fields: {
-                        FNAME: fullName.split(" ")[0],
-                        LNAME: fullName.split(" ").slice(1).join(" ") || "",
-                        COMPANY: company,
-                        PHONE: phone,
+                    email: email,
+                    fields: {
+                        name: fullName.split(" ")[0],
+                        last_name: fullName.split(" ").slice(1).join(" ") || "",
+                        company: company,
+                        phone: phone,
                     },
-                    // Tagged with general lead tag + the specific service (formatted for tags)
+                    // Adding a tag helps trigger automation workflows in MailerLite
                     tags: ["Website_Lead", interestedService.replace(/\s+/g, "_")]
                 }),
             });
 
-            const mcResult = await mcResponse.json();
-
-            // Success if member created (200/201) OR if they already exist
-            mailchimpSuccess = mcResponse.ok || mcResult.title === "Member Exists";
-            if (mailchimpSuccess) console.log("Direct Mailchimp Sync: Success");
+            if (mlResponse.ok) {
+                mailerliteSuccess = true;
+                console.log("Direct MailerLite Sync: Success");
+            } else {
+                const mlError = await mlResponse.json();
+                console.error("MailerLite API Error:", mlError);
+            }
         } catch (err) {
-            console.error("Direct Mailchimp Sync Error:", err);
+            console.error("Direct MailerLite Sync Error:", err);
         }
     } else {
-        console.warn("Mailchimp credentials missing.");
+        console.warn("MAILERLITE_API_KEY is missing.");
     }
 
     // Final result to the UI
-    if (crmSuccess || mailchimpSuccess) {
+    if (crmSuccess || mailerliteSuccess) {
         return { success: true };
     } else {
         return { success: false, error: "Submission failed. Please check your credentials." };
