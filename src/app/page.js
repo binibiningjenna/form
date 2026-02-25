@@ -15,14 +15,25 @@ const BG = {
 function WaveBg() {
   return (
     <div className="wave-bg" aria-hidden="true">
-      <svg className="wave-layer-1" viewBox="0 0 4320 280" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#3FA7D6" d="M0,200C96,180,192,160,288,160C384,160,480,180,576,190C672,200,768,200,864,185C960,170,1056,145,1152,140C1248,135,1344,155,1440,200C1536,180,1632,160,1728,160C1824,160,1920,180,2016,190C2112,200,2208,200,2304,185C2400,170,2496,145,2592,140C2688,135,2784,155,2880,200C2976,180,3072,160,3168,160C3264,160,3360,180,3456,190C3552,200,3648,200,3744,185C3840,170,3936,145,4032,140C4128,135,4224,155,4320,200L4320,280H0Z" />
+      {/* Layer 1 — deepest, sweeping high from left */}
+      <svg className="wave-layer wave-l1" viewBox="0 0 4320 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#5AB0D8" d="M0,420C240,340,480,220,720,200C960,180,1200,260,1440,320C1680,380,1920,410,2160,380C2400,350,2640,260,2880,220C3120,180,3360,260,3600,320C3840,380,4080,410,4320,420L4320,600H0Z" />
       </svg>
-      <svg className="wave-layer-2" viewBox="0 0 4320 280" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#6FBCE2" d="M0,220C120,210,240,190,360,182C480,174,600,178,720,188C840,198,960,218,1080,218C1200,218,1320,198,1440,220C1560,210,1680,190,1800,182C1920,174,2040,178,2160,188C2280,198,2400,218,2520,218C2640,218,2760,198,2880,220C3000,210,3120,190,3240,182C3360,174,3480,178,3600,188C3720,198,3840,218,3960,218C4080,218,4200,198,4320,220L4320,280H0Z" />
+      {/* Layer 2 — mid-high sweep right to left */}
+      <svg className="wave-layer wave-l2" viewBox="0 0 4320 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#7AC4E0" d="M0,350C180,300,360,260,720,240C1080,220,1260,310,1440,360C1620,410,1920,430,2160,400C2400,370,2640,290,2880,260C3120,230,3300,310,3600,360C3780,390,4080,430,4320,350L4320,600H0Z" />
       </svg>
-      <svg className="wave-layer-3" viewBox="0 0 4320 280" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#9DD3EE" d="M0,245C160,235,320,210,480,210C640,210,800,238,960,244C1120,250,1280,232,1440,245C1600,235,1760,210,1920,210C2080,210,2240,238,2400,244C2560,250,2720,232,2880,245C3040,235,3200,210,3360,210C3520,210,3680,238,3840,244C4000,250,4160,232,4320,245L4320,280H0Z" />
+      {/* Layer 3 — crossing wave, sweeps opposite */}
+      <svg className="wave-layer wave-l3" viewBox="0 0 4320 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#93D1EC" d="M0,460C360,380,600,300,900,280C1200,260,1380,350,1620,400C1860,450,2100,460,2340,430C2580,400,2760,320,3060,290C3360,260,3540,350,3780,400C3960,440,4140,460,4320,460L4320,600H0Z" />
+      </svg>
+      {/* Layer 4 — gentle mid wave */}
+      <svg className="wave-layer wave-l4" viewBox="0 0 4320 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#ADDEF2" d="M0,500C300,460,600,400,900,380C1200,360,1440,420,1680,460C1920,500,2160,510,2400,490C2640,470,2880,420,3120,390C3360,360,3600,420,3840,460C4020,490,4200,510,4320,500L4320,600H0Z" />
+      </svg>
+      {/* Layer 5 — soft foreground, barely visible */}
+      <svg className="wave-layer wave-l5" viewBox="0 0 4320 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#C8E9F7" d="M0,530C240,510,480,470,720,460C960,450,1200,480,1440,510C1680,540,1920,550,2160,540C2400,530,2640,490,2880,470C3120,450,3360,480,3600,510C3840,540,4080,550,4320,530L4320,600H0Z" />
       </svg>
     </div>
   );
@@ -52,8 +63,8 @@ function Field({ id, name, label, type, placeholder, autoComplete, error }) {
         htmlFor={id}
         className="font-bold tracking-[0.14em] uppercase"
         style={{
-          fontSize: "clamp(0.58rem, 0.9vw, 0.68rem)",
-          color: error ? "#E53E3E" : "#3FA7D6",
+          fontSize: "clamp(0.65rem, 0.9vw, 0.68rem)",
+          color: error ? "var(--redColor)" : "var(--primaryColor)",
         }}
       >
         {label}
@@ -61,17 +72,17 @@ function Field({ id, name, label, type, placeholder, autoComplete, error }) {
       <input
         id={id} name={name} type={type}
         placeholder={placeholder} autoComplete={autoComplete} required
-        className="w-full rounded-xl bg-white/60 text-[#0B2545] placeholder:text-[#96bccc] focus:outline-none focus:bg-white/85 focus:ring-2 hover:bg-white/70 transition-all duration-200"
+        className="form-field w-full rounded-xl bg-white/60 placeholder:text-[#96bccc] focus:outline-none focus:bg-white/85 hover:bg-white/70 transition-all duration-200"
         style={{
           height: "clamp(40px, 5vh, 50px)",
           padding: "0 16px",
           fontSize: "clamp(0.85rem, 1.2vw, 0.95rem)",
-          border: error ? "1.5px solid #E53E3E" : "1px solid rgba(63,167,214,0.3)",
-          boxShadow: error ? "0 0 0 3px rgba(229,62,62,0.1)" : "none",
+          color: "var(--secondaryColor)",
+          border: error ? "1px solid var(--redColor)" : "1px solid var(--secondaryColor)",
         }}
       />
       {error && (
-        <span style={{ fontSize: "clamp(0.6rem, 0.85vw, 0.72rem)", color: "#E53E3E", marginTop: "2px" }}>
+        <span style={{ fontSize: "clamp(0.6rem, 0.85vw, 0.72rem)", color: "var(--redColor)", marginTop: "2px" }}>
           {error}
         </span>
       )}
@@ -107,16 +118,15 @@ function FormPage({ onSubmit, submitting, submitError, fieldErrors = {} }) {
         }}
       >
         {/* Heading */}
-        <div className="text-center" style={{ marginBottom: "clamp(6px, 1vh, 14px)" }}>
+        <div className="text-center pt-6 lg:pt-2" style={{ marginBottom: "clamp(6px, 1vh, 14px)" }}>
           <div
-            className="font-extrabold text-[#003E86]"
-            style={{ fontSize: "clamp(1.25rem, 3vw, 1.8rem)" }}
+            className="font-extrabold"
+            style={{ fontSize: "clamp(1.25rem, 3vw, 1.8rem)", color: "var(--primaryColor)" }}
           >
-            Secure Your Spot
+            Get Started
           </div>
           <p
-            className="text-[#3768A2]"
-            style={{ fontSize: "clamp(0.8rem, 1.4vw, 0.95rem)", marginTop: "4px" }}
+            style={{ color: "var(--secondaryColor)", fontSize: "clamp(0.8rem, 1.4vw, 0.95rem)", marginTop: "4px" }}
           >
             Fill in your details to reserve a consultation slot.
           </p>
@@ -124,8 +134,9 @@ function FormPage({ onSubmit, submitting, submitError, fieldErrors = {} }) {
 
         {/* Divider */}
         <div
-          className="rounded-full bg-gradient-to-r from-[#38BDF2] to-[#3FA7D6]"
+          className="rounded-full"
           style={{
+            background: "var(--primaryColor)",
             width: "40px",
             height: "2px",
             margin: "clamp(4px, 0.8vh, 10px) auto clamp(8px, 1.2vh, 16px)",
@@ -135,7 +146,7 @@ function FormPage({ onSubmit, submitting, submitError, fieldErrors = {} }) {
         {/* Form fields */}
         <form
           id="consultation-form"
-          className="w-full flex flex-col"
+          className="w-full flex flex-col pt-6 lg:pt-0"
           style={{ gap: "clamp(12px, 1.8vh, 20px)", marginTop: "clamp(6px, 1vh, 14px)" }}
           onSubmit={onSubmit}
           noValidate
@@ -153,7 +164,7 @@ function FormPage({ onSubmit, submitting, submitError, fieldErrors = {} }) {
         <button
           id="submit-btn" type="submit" form="consultation-form"
           disabled={submitting}
-          className="w-full rounded-xl bg-gradient-to-br from-[#003E86] to-[#0B2545] text-white font-bold shadow-lg shadow-[#003E86]/30 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-lg"
+          className="btn-primary w-full rounded-xl text-white font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-lg"
           style={{
             height: "clamp(44px, 5.5vh, 52px)",
             fontSize: "clamp(0.9rem, 1.3vw, 1.05rem)",
@@ -162,10 +173,9 @@ function FormPage({ onSubmit, submitting, submitError, fieldErrors = {} }) {
           {submitting ? "Securing Your Spot" : "Secure My Spot"}
         </button>
 
-
         <p
-          className="flex items-center gap-1.5 text-[#3768A2]"
-          style={{ fontSize: "clamp(0.6rem, 0.9vw, 0.72rem)", marginTop: "clamp(6px, 1vh, 12px)" }}
+          className="flex items-center gap-1.5"
+          style={{ color: "var(--primaryColor)", fontSize: "clamp(0.6rem, 0.9vw, 0.72rem)", marginTop: "clamp(6px, 1vh, 12px)" }}
         >
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -186,23 +196,23 @@ function SuccessPage({ onScheduleNow, onScheduleLater }) {
         style={{ gap: "clamp(8px, 1.5vh, 16px)" }}
       >
         <BadgeCheck
-          className="text-[#003E86]"
           strokeWidth={1.4}
           style={{
+            color: "var(--primaryColor)",
             width: "clamp(56px, 10vh, 80px)",
             height: "clamp(56px, 10vh, 80px)",
             filter: "drop-shadow(0 4px 14px rgba(56,189,242,0.28))",
           }}
         />
         <h1
-          className="font-extrabold text-[#003E86] tracking-tight"
-          style={{ fontSize: "clamp(1.3rem, 3.5vw, 2rem)" }}
+          className="font-extrabold tracking-tight"
+          style={{ fontSize: "clamp(1.3rem, 3.5vw, 2rem)", color: "var(--primaryColor)" }}
         >
           Spot Secured!
         </h1>
         <p
-          className="text-[#3768A2] leading-relaxed max-w-[28ch]"
-          style={{ fontSize: "clamp(0.8rem, 1.6vw, 0.95rem)" }}
+          className="leading-relaxed max-w-[28ch]"
+          style={{ fontSize: "clamp(0.8rem, 1.6vw, 0.95rem)", color: "var(--secondaryColor)" }}
         >
           Thank you for submitting your details. We&apos;ve received your
           information. Would you like to schedule your meeting now or later?
@@ -220,7 +230,7 @@ function SuccessPage({ onScheduleNow, onScheduleLater }) {
         <button
           id="schedule-now-btn"
           onClick={onScheduleNow}
-          className="flex items-center justify-center gap-2 w-full bg-gradient-to-br from-[#003E86] to-[#0B2545] text-white font-bold rounded-xl shadow-lg shadow-[#003E86]/30 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+          className="btn-primary flex items-center justify-center gap-2 w-full text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
           style={{ height: "clamp(44px, 5.5vh, 52px)", fontSize: "clamp(0.9rem, 1.3vw, 1.05rem)" }}
         >
           <CalendarCheck size={18} strokeWidth={2} />
@@ -229,7 +239,7 @@ function SuccessPage({ onScheduleNow, onScheduleLater }) {
         <button
           id="schedule-later-btn"
           onClick={onScheduleLater}
-          className="flex items-center justify-center gap-2 w-full border-2 border-[#003E86] text-[#003E86] bg-transparent font-bold rounded-xl hover:bg-[#003E86]/5 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+          className="btn-outline flex items-center justify-center gap-2 w-full border-2 bg-transparent font-bold rounded-xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
           style={{ height: "clamp(44px, 5.5vh, 52px)", fontSize: "clamp(0.9rem, 1.3vw, 1.05rem)" }}
         >
           <Clock size={17} strokeWidth={2} />
@@ -249,30 +259,29 @@ function InboxPage({ onBack, onResend }) {
         style={{ gap: "clamp(8px, 1.5vh, 16px)" }}
       >
         <MailOpen
-          className="text-[#003E86]"
           strokeWidth={1.4}
           style={{
+            color: "var(--primaryColor)",
             width: "clamp(56px, 10vh, 80px)",
             height: "clamp(56px, 10vh, 80px)",
             filter: "drop-shadow(0 4px 14px rgba(56,189,242,0.24))",
           }}
         />
         <h1
-          className="font-extrabold text-[#003E86] tracking-tight"
-          style={{ fontSize: "clamp(1.3rem, 3.5vw, 2rem)" }}
+          className="font-extrabold tracking-tight"
+          style={{ color: "var(--primaryColor)", fontSize: "clamp(1.3rem, 3.5vw, 2rem)" }}
         >
           Check Your Inbox
         </h1>
         <p
-          className="text-[#3768A2] leading-relaxed max-w-[28ch]"
-          style={{ fontSize: "clamp(0.8rem, 1.6vw, 0.95rem)" }}
+          className="leading-relaxed max-w-[28ch]"
+          style={{ color: "var(--secondaryColor)", fontSize: "clamp(0.8rem, 1.6vw, 0.95rem)" }}
         >
           We&apos;ve sent you an email with your booking link.
           You can schedule your meeting anytime.
         </p>
       </div>
 
-      {/* Bottom — buttons, anchored above waves */}
       <div
         className="shrink-0 w-full max-w-xs sm:max-w-sm px-6 flex flex-col items-center"
         style={{
@@ -283,7 +292,7 @@ function InboxPage({ onBack, onResend }) {
         <button
           id="got-it-btn"
           onClick={onBack}
-          className="w-full bg-gradient-to-br from-[#003E86] to-[#0B2545] text-white font-bold rounded-xl shadow-lg shadow-[#003E86]/30 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+          className="btn-primary w-full text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
           style={{ height: "clamp(44px, 5.5vh, 52px)", fontSize: "clamp(0.9rem, 1.3vw, 1.05rem)" }}
         >
           Got It
@@ -291,8 +300,8 @@ function InboxPage({ onBack, onResend }) {
         <button
           id="resend-email-btn"
           onClick={onResend}
-          className="text-[#003E86] font-semibold underline underline-offset-2 hover:text-[#38BDF2] transition-colors duration-200"
-          style={{ fontSize: "clamp(0.78rem, 1.2vw, 0.9rem)" }}
+          className="font-semibold underline underline-offset-2 transition-colors duration-200"
+          style={{ color: "var(--primaryColor)", fontSize: "clamp(0.78rem, 1.2vw, 0.9rem)" }}
         >
           Resend Email
         </button>
@@ -344,15 +353,14 @@ function SchedulePage({ onBack, onResend }) {
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-white" style={{ overflow: "auto" }}>
-      {/* Header with back button + logo */}
       <div
         className="shrink-0 w-full flex items-center justify-between"
         style={{ padding: "clamp(12px, 2vh, 24px) 24px" }}
       >
         <button
           onClick={onBack}
-          className="flex items-center gap-1.5 text-[#003E86] font-semibold hover:text-[#38BDF2] transition-colors duration-200"
-          style={{ fontSize: "clamp(0.8rem, 1.2vw, 0.95rem)" }}
+          className="flex items-center gap-1.5 font-semibold transition-colors duration-200"
+          style={{ color: "var(--primaryColor)", fontSize: "clamp(0.8rem, 1.2vw, 0.95rem)" }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M19 12H5" />
@@ -364,7 +372,6 @@ function SchedulePage({ onBack, onResend }) {
         <div style={{ width: "52px" }} />
       </div>
 
-      {/* Cal.com inline embed — fills remaining space */}
       <div
         id="my-cal-inline-meeting-rooms"
         style={{ flex: 1, width: "100%", minHeight: 0, overflow: "scroll" }}
