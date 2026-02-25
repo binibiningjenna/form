@@ -581,22 +581,23 @@ function SchedulePage({ onBack, email, name }) {
       };
     })(window, "https://app.cal.com/embed/embed.js", "init");
 
-    Cal("init", "meeting-rooms", { origin: "https://app.cal.com" });
+    Cal("init", "kasalang-tagaytay-expo", { origin: "https://app.cal.com" });
 
-    Cal.ns["meeting-rooms"]("inline", {
-      elementOrSelector: "#my-cal-inline-meeting-rooms",
+    // 1. Inline the Calendar with Pre-filled data
+    Cal.ns["kasalang-tagaytay-expo"]("inline", {
+      elementOrSelector: "#my-cal-inline-kasalang-tagaytay-expo",
       config: {
         "layout": "month_view",
         "useSlotsViewOnSmallScreen": "true",
         "name": name,
         "email": email
       },
-      calLink: "startuplab-booking/meeting-rooms",
+      calLink: "startuplab-booking/kasalang-tagaytay-expo",
     });
 
-    Cal.ns["meeting-rooms"]("ui", {
+    Cal.ns["kasalang-tagaytay-expo"]("ui", {
       cssVarsPerTheme: {
-        light: { "cal-brand": "#003E86" },
+        light: { "cal-brand": "#2e2e2f" },
         dark: { "cal-brand": "#F2F2F2" },
       },
       hideEventTypeDetails: false,
@@ -604,7 +605,7 @@ function SchedulePage({ onBack, email, name }) {
     });
 
     // 2. Listen for a successful booking
-    Cal.ns["meeting-rooms"]("on", {
+    Cal.ns["kasalang-tagaytay-expo"]("on", {
       action: "bookingSuccessful",
       callback: (e) => {
         console.log("Cal.com Booking Success Event Captured:", e);
@@ -616,7 +617,7 @@ function SchedulePage({ onBack, email, name }) {
     });
 
     // Detect when Cal.com embed is ready
-    const el = document.getElementById("my-cal-inline-meeting-rooms");
+    const el = document.getElementById("my-cal-inline-kasalang-tagaytay-expo");
     if (el) {
       const obs = new MutationObserver(() => {
         const iframe = el.querySelector("iframe");
@@ -693,7 +694,7 @@ function SchedulePage({ onBack, email, name }) {
 
       {/* Cal.com embed */}
       <div
-        id="my-cal-inline-meeting-rooms"
+        id="my-cal-inline-kasalang-tagaytay-expo"
         style={{ flex: 1, width: "100%", minHeight: 0, overflow: "scroll", marginTop: "1rem" }}
       />
     </div>
