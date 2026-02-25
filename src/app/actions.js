@@ -94,6 +94,14 @@ export async function submitLead(formData) {
                 const statusName = `Booking_${bookingStatus.charAt(0).toUpperCase() + bookingStatus.slice(1)}`;
                 const statusGroup = await ensureGroup(statusName);
                 if (statusGroup) groups.push(statusGroup);
+
+                // DEFAULT BEHAVIOR: If they just answered the form (pending),
+                // we automatically add them to the "Later" group so reminders
+                // start immediately in case they close the browser.
+                if (bookingStatus === "pending") {
+                    const reminderGroup = await ensureGroup("Booking_Later");
+                    if (reminderGroup) groups.push(reminderGroup);
+                }
             }
 
             const mlResponse = await fetch(mlUrl, {
