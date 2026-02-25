@@ -550,7 +550,7 @@ function InboxPage({ onBack, onResend }) {
 /* ═══════════════════════════════════════════════════════════════════════
    STATE D — Cal.com Schedule Page
    ═══════════════════════════════════════════════════════════════════════ */
-function SchedulePage({ onBack }) {
+function SchedulePage({ onBack, email, name }) {
   const [calLoaded, setCalLoaded] = useState(false);
 
   useEffect(() => {
@@ -585,7 +585,12 @@ function SchedulePage({ onBack }) {
 
     Cal.ns["meeting-rooms"]("inline", {
       elementOrSelector: "#my-cal-inline-meeting-rooms",
-      config: { "layout": "month_view", "useSlotsViewOnSmallScreen": "true" },
+      config: {
+        "layout": "month_view",
+        "useSlotsViewOnSmallScreen": "true",
+        "name": name,
+        "email": email
+      },
       calLink: "startuplab-booking/meeting-rooms",
     });
 
@@ -596,6 +601,18 @@ function SchedulePage({ onBack }) {
       },
       hideEventTypeDetails: false,
       layout: "month_view",
+    });
+
+    // 2. Listen for a successful booking
+    Cal.ns["meeting-rooms"]("on", {
+      action: "bookingSuccessful",
+      callback: (e) => {
+        console.log("Cal.com Booking Success Event Captured:", e);
+        // Automatically mark as booked in MailerLite to stop reminders
+        if (email) {
+          updateBookingStatus(email, "booked");
+        }
+      }
     });
 
     // Detect when Cal.com embed is ready
@@ -612,7 +629,7 @@ function SchedulePage({ onBack }) {
       const t = setTimeout(() => setCalLoaded(true), 8000);
       return () => { obs.disconnect(); clearTimeout(t); };
     }
-  }, []);
+  }, [email, name]);
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-white" style={{ overflow: "auto" }}>
@@ -693,6 +710,7 @@ export default function Home() {
   const [submitError, setSubmitError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
   const [userEmail, setUserEmail] = useState("");
+  const [userFullName, setUserFullName] = useState("");
 
   const handleServiceSelect = (service) => {
     setSelectedService(service);
@@ -747,6 +765,7 @@ export default function Home() {
       if (result.success) {
         console.log("Contact saved successfully to CRM");
         setUserEmail(email);
+        setUserFullName(fullName);
         setState("success");
       } else {
         setSubmitError(result.error || "Something went wrong. Please try again.");
@@ -797,7 +816,11 @@ export default function Home() {
         />
       )}
       {state === "schedule" && (
-        <SchedulePage onBack={() => setState("success")} />
+        <SchedulePage
+          onBack={() => setState("success")}
+          email={userEmail}
+          name={userFullName}
+        />
       )}
       {state === "inbox" && (
         <InboxPage
