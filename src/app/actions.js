@@ -27,7 +27,7 @@ export async function submitLead(formData) {
                     phone: phone,
                     company: company,
                     notes: `Interested in: ${interestedService}`,
-                    "lead-sources": "Kasalang Tagaytay",
+                    source: "Kasalang Tagaytay",
                 }),
             });
             crmSuccess = crmResponse.ok;

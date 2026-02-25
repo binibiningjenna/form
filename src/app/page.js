@@ -109,7 +109,7 @@ const SERVICES = [
   { id: "web", name: "Website Development & Design", icon: Globe },
   { id: "crm", name: "Ribo CRM", icon: Database },
   { id: "stepup", name: "StepUp", icon: Zap },
-  { id: "prajek", name: "Prajek", icon: Rocket },
+  { id: "prajek", name: "Projek", icon: Rocket },
 ];
 
 /* ─── STATE 0 — Services Selection ────────────────────────────────────── */
