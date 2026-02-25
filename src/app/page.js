@@ -713,6 +713,18 @@ export default function Home() {
   const [userEmail, setUserEmail] = useState("");
   const [userFullName, setUserFullName] = useState("");
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const emailParam = params.get("email");
+    const nameParam = params.get("name");
+
+    if (emailParam && nameParam) {
+      setUserEmail(emailParam);
+      setUserFullName(nameParam);
+      setState("success");
+    }
+  }, []);
+
   const handleServiceSelect = (service) => {
     setSelectedService(service);
     setFieldErrors({});
