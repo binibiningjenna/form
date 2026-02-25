@@ -26,10 +26,7 @@ export async function submitLead(formData) {
                     email: email,
                     phone: phone,
                     company: company,
-                    notes: `Interested in: ${interestedService}\nLead Source: Kasalang Tagaytay`,
-                    source: "Kasalang Tagaytay",
-                    lead_source: "Kasalang Tagaytay",
-                    leadSource: "Kasalang Tagaytay",
+                    notes: `Interested in: ${interestedService}`,
                     "lead-sources": "Kasalang Tagaytay",
                 }),
             });
