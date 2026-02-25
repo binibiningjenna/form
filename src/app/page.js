@@ -463,6 +463,8 @@ function SchedulePage({ onBack, onResend }) {
   );
 }
 
+import { submitLead } from "./actions";
+
 /* ─── Root ─────────────────────────────────────────────────────────────── */
 export default function Home() {
   const [state, setState] = useState("services");
@@ -517,38 +519,24 @@ export default function Home() {
     }
 
     try {
-      // Send data to the webhook URL
-      const webhookUrl = process.env.NEXT_PUBLIC_WEBHOOK_URL;
-
-      if (!webhookUrl) {
-        console.warn("NEXT_PUBLIC_WEBHOOK_URL is not defined.");
-      }
-
-      const response = await fetch(webhookUrl || "#", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fullName,
-          email,
-          phone,
-          company,
-          interestedService: selectedService,
-          submittedAt: new Date().toISOString(),
-        }),
+      // Direct submission to CRM via Server Action
+      const result = await submitLead({
+        fullName,
+        email,
+        phone,
+        company,
+        interestedService: selectedService,
       });
 
-      if (!response.ok && webhookUrl) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to send data to webhook.");
+      if (result.success) {
+        console.log("Contact saved successfully to CRM");
+        setState("success");
+      } else {
+        setSubmitError(result.error || "Something went wrong. Please try again.");
       }
-
-      console.log("Data sent successfully to webhook");
-      setState("success");
     } catch (err) {
-      console.error("Webhook error:", err);
-      setSubmitError("Failed to submit. Please try again later.");
+      console.error("Submission error:", err);
+      setSubmitError("Network error. Please check your connection and try again.");
     } finally {
       setSubmitting(false);
     }
