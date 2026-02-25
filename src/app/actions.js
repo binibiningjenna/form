@@ -58,8 +58,9 @@ export async function submitLead(formData) {
                         company: company,
                         phone: phone,
                     },
-                    // Adding a tag helps trigger automation workflows in MailerLite
-                    tags: ["Website_Lead", interestedService.replace(/\s+/g, "_")]
+                    // Adding to a specific group and adding tags helps trigger automation workflows in MailerLite
+                    groups: ["180374262508422229"],
+                    tags: ["Website_Lead", "Kasalang_Tagaytay_Leads", interestedService.replace(/\s+/g, "_")]
                 }),
             });
 
