@@ -1,6 +1,47 @@
 "use server";
 
 /**
+ * Private helper to find or create a group ID by name in MailerLite.
+ * In MailerLite Connect API, "tags" are managed via their "Groups" system.
+ */
+async function ensureGroup(groupName) {
+    const ML_API_KEY = process.env.MAILERLITE_API_KEY;
+    if (!ML_API_KEY) return null;
+
+    try {
+        // 1. Search for existing group
+        const searchUrl = `https://connect.mailerlite.com/api/groups?filter[name]=${encodeURIComponent(groupName)}`;
+        const searchRes = await fetch(searchUrl, {
+            headers: { "Authorization": `Bearer ${ML_API_KEY}`, "Accept": "application/json" }
+        });
+        if (!searchRes.ok) return null;
+        const searchData = await searchRes.json();
+
+        if (searchData.data && searchData.data.length > 0) {
+            return searchData.data[0].id;
+        }
+
+        // 2. Not found, create it
+        const createUrl = `https://connect.mailerlite.com/api/groups`;
+        const createRes = await fetch(createUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "Authorization": `Bearer ${ML_API_KEY}`,
+            },
+            body: JSON.stringify({ name: groupName })
+        });
+        if (!createRes.ok) return null;
+        const createData = await createRes.json();
+        return createData.data?.id || null;
+    } catch (err) {
+        console.error(`Error ensuring group ${groupName}:`, err);
+        return null;
+    }
+}
+
+/**
  * Server Action to handle lead submission directly to both your custom CRM 
  * and MailerLite, completely bypassing Make.com.
  */
@@ -43,9 +84,16 @@ export async function submitLead(formData) {
             // MailerLite API URL for creating/updating a subscriber
             const mlUrl = `https://connect.mailerlite.com/api/subscribers`;
 
-            const tags = ["Website_Lead", "Kasalang_Tagaytay_Leads", interestedService.replace(/\s+/g, "_")];
+            const groups = ["180374262508422229"]; // Default: Kasalang Tagaytay Leads group
+
+            // Add categorical groups (In MailerLite, these act as tags)
+            const serviceGroup = await ensureGroup(interestedService);
+            if (serviceGroup) groups.push(serviceGroup);
+
             if (bookingStatus) {
-                tags.push(`Booking_${bookingStatus.charAt(0).toUpperCase() + bookingStatus.slice(1)}`);
+                const statusName = `Booking_${bookingStatus.charAt(0).toUpperCase() + bookingStatus.slice(1)}`;
+                const statusGroup = await ensureGroup(statusName);
+                if (statusGroup) groups.push(statusGroup);
             }
 
             const mlResponse = await fetch(mlUrl, {
@@ -64,9 +112,7 @@ export async function submitLead(formData) {
                         phone: phone,
                         booking_status: bookingStatus || "pending",
                     },
-                    // Adding to a specific group and adding tags helps trigger automation workflows in MailerLite
-                    groups: ["180374262508422229"],
-                    tags: tags
+                    groups: groups
                 }),
             });
 
@@ -100,9 +146,10 @@ export async function updateBookingStatus(email, status) {
     if (!ML_API_KEY) return { success: false, error: "API Key missing" };
 
     try {
-        const mlUrl = `https://connect.mailerlite.com/api/subscribers`;
+        const groupName = `Booking_${status.charAt(0).toUpperCase() + status.slice(1)}`;
+        const groupId = await ensureGroup(groupName);
 
-        // In MailerLite, POST to /subscribers with the same email updates the subscriber
+        const mlUrl = `https://connect.mailerlite.com/api/subscribers`;
         const response = await fetch(mlUrl, {
             method: "POST",
             headers: {
@@ -115,7 +162,7 @@ export async function updateBookingStatus(email, status) {
                 fields: {
                     booking_status: status,
                 },
-                tags: [`Booking_${status.charAt(0).toUpperCase() + status.slice(1)}`]
+                groups: groupId ? [groupId] : []
             }),
         });
 
