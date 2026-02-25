@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
-import { updateBookingStatus } from "../../actions";
+import { updateBookingStatus } from "../../../actions";
+
+export async function GET() {
+    return NextResponse.json({ success: true, message: "Cal.com Webhook is active and waiting for POST requests." });
+}
 
 export async function POST(request) {
     try {
         const payload = await request.json();
 
-        // Cal.com sends 'booking.created' event
+        // Cal.com sends 'BOOKING_CREATED' event
         if (payload.triggerEvent === "BOOKING_CREATED") {
             const email = payload.payload.attendees[0].email;
             const name = payload.payload.attendees[0].name;
