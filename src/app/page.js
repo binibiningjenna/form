@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BadgeCheck, CalendarCheck, Clock, MailOpen } from "lucide-react";
+import { BadgeCheck, CalendarCheck, Clock, MailOpen, Cpu, Globe, Database, Rocket, Zap, ChevronRight } from "lucide-react";
 import Image from "next/image";
-import { supabase } from "@/lib/supabase";
 
 /* ─── Shared background style ─────────────────────────────────────────── */
 const BG = {
@@ -105,8 +104,92 @@ function PageShell({ children }) {
   );
 }
 
+const SERVICES = [
+  { id: "ai", name: "AI and Automation", icon: Cpu },
+  { id: "web", name: "Website Development & Design", icon: Globe },
+  { id: "crm", name: "Ribo CRM", icon: Database },
+  { id: "stepup", name: "StepUp", icon: Zap },
+  { id: "prajek", name: "Prajek", icon: Rocket },
+];
+
+/* ─── STATE 0 — Services Selection ────────────────────────────────────── */
+function ServicesPage({ onSelect }) {
+  return (
+    <PageShell>
+      <div
+        className="flex-1 flex flex-col items-center w-full max-w-md sm:max-w-lg lg:max-w-xl"
+        style={{
+          padding: "clamp(12px, 2vh, 24px) 0",
+          overflowY: "auto",
+          minHeight: 0,
+        }}
+      >
+        {/* Heading Section */}
+        <div className="text-center pt-4 lg:pt-0" style={{ marginBottom: "clamp(16px, 3vh, 32px)" }}>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/40 border border-white/20 mb-4 shadow-sm backdrop-blur-sm">
+            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-[#003E86]">
+              Consultation Inquiry
+            </span>
+          </div>
+
+          <p
+            className="font-semibold text-[#003E86]/70 mb-2"
+            style={{ fontSize: "clamp(0.85rem, 1.5vw, 1rem)" }}
+          >
+            Hi There! 👋 Thank you for considering StartupLab
+          </p>
+
+          <h1
+            className="font-extrabold leading-[1.1] tracking-tight"
+            style={{ fontSize: "clamp(1.75rem, 4.5vw, 2.75rem)", color: "var(--primaryColor)" }}
+          >
+            What services are <br /> you interested in?
+          </h1>
+
+          <p className="mt-4 text-[#3768A2] font-medium" style={{ fontSize: "0.9rem" }}>
+            Select one to personalize your experience
+          </p>
+        </div>
+
+        {/* Action Buttons Grid */}
+        <div className="w-full flex flex-col gap-3.5 py-4 px-2">
+          {SERVICES.map((service) => (
+            <button
+              key={service.id}
+              onClick={() => onSelect(service.name)}
+              className="group relative w-full flex items-center gap-4 px-6 rounded-2xl bg-white/30 border border-white/40 shadow-sm hover:bg-white/60 hover:border-[#003E86]/30 hover:shadow-md transition-all duration-300"
+              style={{
+                height: "clamp(56px, 8vh, 72px)",
+              }}
+            >
+              <div className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-xl bg-gradient-to-br from-[#003E86] to-[#3768A2] text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <service.icon size={22} strokeWidth={2.5} />
+              </div>
+
+              <div className="flex-1 text-left">
+                <span className="block font-bold text-[#003E86]" style={{ fontSize: "clamp(0.95rem, 1.3vw, 1.15rem)" }}>
+                  {service.name}
+                </span>
+              </div>
+
+              <ChevronRight
+                className="shrink-0 text-[#003E86]/30 group-hover:text-[#003E86] group-hover:translate-x-1 transition-all duration-300"
+                size={20}
+              />
+            </button>
+          ))}
+        </div>
+
+        <p className="mt-6 text-center text-[#003E86]/60 font-medium italic" style={{ fontSize: "0.75rem" }}>
+          * Multi-service selection available during consultation
+        </p>
+      </div>
+    </PageShell>
+  );
+}
+
 /* ─── STATE A — Registration Form ─────────────────────────────────────── */
-function FormPage({ onSubmit, submitting, submitError, fieldErrors = {} }) {
+function FormPage({ onSubmit, submitting, submitError, fieldErrors = {}, selectedService }) {
   return (
     <PageShell>
       <div
@@ -123,12 +206,12 @@ function FormPage({ onSubmit, submitting, submitError, fieldErrors = {} }) {
             className="font-extrabold"
             style={{ fontSize: "clamp(1.25rem, 3vw, 1.8rem)", color: "var(--primaryColor)" }}
           >
-            Get Started
+            Almost There
           </div>
           <p
             style={{ color: "var(--secondaryColor)", fontSize: "clamp(0.8rem, 1.4vw, 0.95rem)", marginTop: "4px" }}
           >
-            Fill in your details to reserve a consultation slot.
+            Fill in your details for your interest in <span className="font-bold">{selectedService}</span>.
           </p>
         </div>
 
@@ -382,10 +465,16 @@ function SchedulePage({ onBack, onResend }) {
 
 /* ─── Root ─────────────────────────────────────────────────────────────── */
 export default function Home() {
-  const [state, setState] = useState("form");
+  const [state, setState] = useState("services");
+  const [selectedService, setSelectedService] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
+
+  const handleServiceSelect = (service) => {
+    setSelectedService(service);
+    setState("form");
+  };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -428,29 +517,38 @@ export default function Home() {
     }
 
     try {
-      // Insert into the "contacts" table in Supabase
-      const { data, error } = await supabase
-        .from("contacts")
-        .insert([
-          {
-            full_name: fullName,
-            email: email,
-            phone: phone || null,
-            company: company || null,
-          },
-        ])
-        .select();
+      // Send data to the webhook URL
+      const webhookUrl = process.env.NEXT_PUBLIC_WEBHOOK_URL;
 
-      if (error) {
-        console.error("Supabase insert error:", error);
-        setSubmitError(error.message || "Something went wrong. Please try again.");
-      } else {
-        console.log("Contact saved successfully:", data);
-        setState("success");
+      if (!webhookUrl) {
+        console.warn("NEXT_PUBLIC_WEBHOOK_URL is not defined.");
       }
+
+      const response = await fetch(webhookUrl || "#", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fullName,
+          email,
+          phone,
+          company,
+          interestedService: selectedService,
+          submittedAt: new Date().toISOString(),
+        }),
+      });
+
+      if (!response.ok && webhookUrl) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to send data to webhook.");
+      }
+
+      console.log("Data sent successfully to webhook");
+      setState("success");
     } catch (err) {
-      console.error("Unexpected error:", err);
-      setSubmitError("Network error. Please check your connection and try again.");
+      console.error("Webhook error:", err);
+      setSubmitError("Failed to submit. Please try again later.");
     } finally {
       setSubmitting(false);
     }
@@ -463,12 +561,16 @@ export default function Home() {
     >
       <WaveBg />
 
+      {state === "services" && (
+        <ServicesPage onSelect={handleServiceSelect} />
+      )}
       {state === "form" && (
         <FormPage
           onSubmit={handleFormSubmit}
           submitting={submitting}
           submitError={submitError}
           fieldErrors={fieldErrors}
+          selectedService={selectedService}
         />
       )}
       {state === "success" && (
@@ -482,7 +584,7 @@ export default function Home() {
       )}
       {state === "inbox" && (
         <InboxPage
-          onBack={() => setState("form")}
+          onBack={() => setState("services")}
           onResend={() => alert("Email resent!")}
         />
       )}
