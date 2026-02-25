@@ -5,7 +5,7 @@
  * and MailerLite, completely bypassing Make.com.
  */
 export async function submitLead(formData) {
-    const { fullName, email, phone, company, interestedService } = formData;
+    const { fullName, email, phone, company, interestedService, bookingStatus } = formData;
 
     // Configuration
     const CRM_WEBHOOK_URL = process.env.CRM_WEBHOOK_URL;
@@ -26,7 +26,7 @@ export async function submitLead(formData) {
                     email: email,
                     phone: phone,
                     company: company,
-                    notes: `Interested in: ${interestedService}`,
+                    notes: `Interested in: ${interestedService}${bookingStatus ? `\nBooking Status: ${bookingStatus}` : ""}`,
                     source: "Kasalang Tagaytay",
                 }),
             });
@@ -43,6 +43,11 @@ export async function submitLead(formData) {
             // MailerLite API URL for creating/updating a subscriber
             const mlUrl = `https://connect.mailerlite.com/api/subscribers`;
 
+            const tags = ["Website_Lead", "Kasalang_Tagaytay_Leads", interestedService.replace(/\s+/g, "_")];
+            if (bookingStatus) {
+                tags.push(`Booking_${bookingStatus.charAt(0).toUpperCase() + bookingStatus.slice(1)}`);
+            }
+
             const mlResponse = await fetch(mlUrl, {
                 method: "POST",
                 headers: {
@@ -57,10 +62,11 @@ export async function submitLead(formData) {
                         last_name: fullName.split(" ").slice(1).join(" ") || "",
                         company: company,
                         phone: phone,
+                        booking_status: bookingStatus || "pending",
                     },
                     // Adding to a specific group and adding tags helps trigger automation workflows in MailerLite
                     groups: ["180374262508422229"],
-                    tags: ["Website_Lead", "Kasalang_Tagaytay_Leads", interestedService.replace(/\s+/g, "_")]
+                    tags: tags
                 }),
             });
 
@@ -83,5 +89,39 @@ export async function submitLead(formData) {
         return { success: true };
     } else {
         return { success: false, error: "Submission failed. Please check your credentials." };
+    }
+}
+
+/**
+ * Updates the booking status for an existing lead in MailerLite.
+ */
+export async function updateBookingStatus(email, status) {
+    const ML_API_KEY = process.env.MAILERLITE_API_KEY;
+    if (!ML_API_KEY) return { success: false, error: "API Key missing" };
+
+    try {
+        const mlUrl = `https://connect.mailerlite.com/api/subscribers`;
+
+        // In MailerLite, POST to /subscribers with the same email updates the subscriber
+        const response = await fetch(mlUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "Authorization": `Bearer ${ML_API_KEY}`,
+            },
+            body: JSON.stringify({
+                email: email,
+                fields: {
+                    booking_status: status,
+                },
+                tags: [`Booking_${status.charAt(0).toUpperCase() + status.slice(1)}`]
+            }),
+        });
+
+        return { success: response.ok };
+    } catch (err) {
+        console.error("Update Booking Status Error:", err);
+        return { success: false, error: err.message };
     }
 }

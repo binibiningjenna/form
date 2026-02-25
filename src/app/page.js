@@ -683,7 +683,7 @@ function SchedulePage({ onBack }) {
   );
 }
 
-import { submitLead } from "./actions";
+import { submitLead, updateBookingStatus } from "./actions";
 
 /* ─── Root ─────────────────────────────────────────────────────────────── */
 export default function Home() {
@@ -692,6 +692,7 @@ export default function Home() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
+  const [userEmail, setUserEmail] = useState("");
 
   const handleServiceSelect = (service) => {
     setSelectedService(service);
@@ -740,10 +741,12 @@ export default function Home() {
         phone,
         company,
         interestedService: selectedService,
+        bookingStatus: "pending",
       });
 
       if (result.success) {
         console.log("Contact saved successfully to CRM");
+        setUserEmail(email);
         setState("success");
       } else {
         setSubmitError(result.error || "Something went wrong. Please try again.");
@@ -753,6 +756,19 @@ export default function Home() {
       setSubmitError("Network error. Please check your connection and try again.");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleBookingChoice = async (choice) => {
+    if (userEmail) {
+      // Fire and forget updating the status in background
+      updateBookingStatus(userEmail, choice);
+    }
+
+    if (choice === "now") {
+      setState("schedule");
+    } else {
+      setState("inbox");
     }
   };
 
@@ -776,8 +792,8 @@ export default function Home() {
       )}
       {state === "success" && (
         <SuccessPage
-          onScheduleNow={() => setState("schedule")}
-          onScheduleLater={() => setState("inbox")}
+          onScheduleNow={() => handleBookingChoice("now")}
+          onScheduleLater={() => handleBookingChoice("later")}
         />
       )}
       {state === "schedule" && (
