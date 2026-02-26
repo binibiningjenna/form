@@ -48,8 +48,8 @@ function Logo({ compact = false }) {
       priority
       style={{
         width: compact
-          ? "clamp(125px, 18vw, 145px)"
-          : "clamp(180px, 24vw, 205px)",
+          ? "clamp(110px, 18vw, 145px)"
+          : "clamp(160px, 24vw, 205px)",
         height: "auto",
         filter: "drop-shadow(0 2px 6px rgba(0,62,134,0.06))",
       }}
@@ -144,7 +144,7 @@ function ServicesPage({ onSelect }) {
         {/* Header */}
         <div className="text-center w-full pt-6" style={{ marginBottom: "clamp(14px, 2.5vh, 28px)" }}>
           <div
-            className="font-bold tracking-tight text-3xl"
+            className="font-bold tracking-tight text-2xl lg:text-3xl"
             style={{
               color: "var(--primaryColor)",
             }}
