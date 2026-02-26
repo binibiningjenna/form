@@ -100,11 +100,13 @@ export async function submitLead(formData) {
                 const brevoError = await response.json();
                 console.error("Brevo API Response Error:", brevoError);
 
-                // If it's a duplicate SMS error, we consider this a "soft success" 
-                // because the lead is still entered/updated (or already exists).
+                // If it's a duplicate SMS error, we tell the user to fix it.
                 if (brevoError.code === 'duplicate_parameter' || brevoError.message?.includes('SMS')) {
-                    console.warn("Brevo SMS Conflict – likely the user is already in the system. Treating as success.");
-                    brevoSuccess = true;
+                    return {
+                        success: false,
+                        error: "This phone number is already registered with another email. Please use a different number.",
+                        field: "phone"
+                    };
                 }
             }
         } catch (err) {

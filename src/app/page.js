@@ -917,7 +917,12 @@ export default function Home() {
         setUserFullName(fullName);
         setState("success");
       } else {
-        setSubmitError(result.error || "Something went wrong. Please try again.");
+        // If a specific field error is returned, show it on that field
+        if (result.field) {
+          setFieldErrors({ [result.field]: result.error });
+        } else {
+          setSubmitError(result.error || "Something went wrong. Please try again.");
+        }
       }
     } catch (err) {
       console.error("Submission error:", err);
