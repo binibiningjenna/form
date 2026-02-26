@@ -331,7 +331,7 @@ function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onB
       <div
         className="shrink-0 w-full max-w-2xl mx-auto flex flex-col items-center"
         style={{
-          padding: "clamp(24px, 2vh, 24px) clamp(20px, 5vw, 40px) clamp(24px, 4vh, 40px)",
+          padding: "clamp(24px, 2vh, 24px) clamp(20px, 5vw, 40px) clamp(56px, 8vh, 80px)",
           // borderTop: "1px solid rgba(0,62,134,0.06)",
         }}
       >
