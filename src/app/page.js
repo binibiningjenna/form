@@ -887,10 +887,9 @@ export default function Home() {
     } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
       errors.email = "Please enter a valid email (e.g. alex@gmail.com).";
     }
-    if (!phone) {
-      errors.phone = "Phone number is required.";
-    } else if (!/^[0-9+() \-]+$/.test(phone)) {
-      errors.phone = "Phone must contain only numbers, +, (), spaces, or dashes.";
+    // Phone is optional and non-strict
+    if (phone && !/^[0-9+() \-]+$/.test(phone)) {
+      // Still show a soft warning if it looks completely wrong, but let's just make it a comment here.
     }
     if (!company) errors.company = "Company name is required.";
 

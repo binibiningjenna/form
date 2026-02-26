@@ -84,7 +84,7 @@ export async function submitLead(formData) {
                         FIRSTNAME: firstName,
                         LASTNAME: lastName,
                         COMPANY: company,
-                        SMS: phone,
+                        PHONE: phone,
                         INTERESTED_SERVICE: interestedService,
                         BOOKING_STATUS: bookingStatus || "pending"
                     },
@@ -100,11 +100,11 @@ export async function submitLead(formData) {
                 const brevoError = await response.json();
                 console.error("Brevo API Response Error:", brevoError);
 
-                // If it's a duplicate SMS error, we tell the user to fix it.
-                if (brevoError.code === 'duplicate_parameter' || brevoError.message?.includes('SMS')) {
+                // If it's a duplicate PHONE error (unlikely) or parameter error
+                if (brevoError.code === 'duplicate_parameter' || brevoError.message?.includes('PHONE')) {
                     return {
                         success: false,
-                        error: "This phone number is already registered with another email. Please use a different number.",
+                        error: "This phone number is already registered. Please use a different one.",
                         field: "phone"
                     };
                 }
