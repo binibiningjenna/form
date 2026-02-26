@@ -19,19 +19,19 @@ function WaveBg() {
   return (
     <div className="wave-bg" aria-hidden="true">
       <svg className="wave-layer wave-l1" viewBox="0 0 4320 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#5AB0D8" d="M0,420C240,340,480,220,720,200C960,180,1200,260,1440,320C1680,380,1920,410,2160,380C2400,350,2640,260,2880,220C3120,180,3360,260,3600,320C3840,380,4080,410,4320,420L4320,600H0Z" />
+        <path fill="#5AB0D8" d="M0,400C240,340,480,280,720,300C960,320,1200,400,1440,400C1680,340,1920,280,2160,300C2400,320,2640,400,2880,400C3120,340,3360,280,3600,300C3840,320,4080,400,4320,400L4320,600H0Z" />
       </svg>
       <svg className="wave-layer wave-l2" viewBox="0 0 4320 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#7AC4E0" d="M0,350C180,300,360,260,720,240C1080,220,1260,310,1440,360C1620,410,1920,430,2160,400C2400,370,2640,290,2880,260C3120,230,3300,310,3600,360C3780,390,4080,430,4320,350L4320,600H0Z" />
+        <path fill="#7AC4E0" d="M0,360C240,310,480,260,720,280C960,300,1200,360,1440,360C1680,310,1920,260,2160,280C2400,300,2640,360,2880,360C3120,310,3360,260,3600,280C3840,300,4080,360,4320,360L4320,600H0Z" />
       </svg>
       <svg className="wave-layer wave-l3" viewBox="0 0 4320 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#93D1EC" d="M0,460C360,380,600,300,900,280C1200,260,1380,350,1620,400C1860,450,2100,460,2340,430C2580,400,2760,320,3060,290C3360,260,3540,350,3780,400C3960,440,4140,460,4320,460L4320,600H0Z" />
+        <path fill="#93D1EC" d="M0,440C240,400,480,340,720,350C960,360,1200,440,1440,440C1680,400,1920,340,2160,350C2400,360,2640,440,2880,440C3120,400,3360,340,3600,350C3840,360,4080,440,4320,440L4320,600H0Z" />
       </svg>
       <svg className="wave-layer wave-l4" viewBox="0 0 4320 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#ADDEF2" d="M0,500C300,460,600,400,900,380C1200,360,1440,420,1680,460C1920,500,2160,510,2400,490C2640,470,2880,420,3120,390C3360,360,3600,420,3840,460C4020,490,4200,510,4320,500L4320,600H0Z" />
+        <path fill="#ADDEF2" d="M0,480C240,460,480,420,720,430C960,440,1200,480,1440,480C1680,460,1920,420,2160,430C2400,440,2640,480,2880,480C3120,460,3360,420,3600,430C3840,440,4080,480,4320,480L4320,600H0Z" />
       </svg>
       <svg className="wave-layer wave-l5" viewBox="0 0 4320 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#C8E9F7" d="M0,530C240,510,480,470,720,460C960,450,1200,480,1440,510C1680,540,1920,550,2160,540C2400,530,2640,490,2880,470C3120,450,3360,480,3600,510C3840,540,4080,550,4320,530L4320,600H0Z" />
+        <path fill="#C8E9F7" d="M0,520C240,510,480,480,720,485C960,490,1200,520,1440,520C1680,510,1920,480,2160,485C2400,490,2640,520,2880,520C3120,510,3360,480,3600,485C3840,490,4080,520,4320,520L4320,600H0Z" />
       </svg>
     </div>
   );
@@ -43,11 +43,13 @@ function Logo({ compact = false }) {
     <Image
       src="/startuplab.png"
       alt="StartupLab Business Center"
-      width={160}
-      height={160}
+      width={210}
+      height={60}
       priority
       style={{
-        width: compact ? "clamp(80px, 12vw, 110px)" : "clamp(100px, 16vw, 150px)",
+        width: compact
+          ? "clamp(125px, 18vw, 145px)"
+          : "clamp(180px, 24vw, 205px)",
         height: "auto",
         filter: "drop-shadow(0 2px 6px rgba(0,62,134,0.06))",
       }}
@@ -58,15 +60,16 @@ function Logo({ compact = false }) {
 /* ─── Field ────────────────────────────────────────────────────────────── */
 function Field({ id, name, label, type, placeholder, autoComplete, error, onClearError }) {
   return (
-    <div className="flex flex-col" style={{ gap: "5px" }}>
+    <div className="flex flex-col" style={{ gap: "6px" }}>
       <label
         htmlFor={id}
-        className="font-semibold uppercase"
+        className="font-bold uppercase"
         style={{
-          fontSize: "clamp(0.62rem, 0.8vw, 0.68rem)",
-          letterSpacing: "0.13em",
+          fontSize: "clamp(0.6rem, 0.75vw, 0.7rem)",
+          letterSpacing: "0.15em",
           color: error ? "var(--redColor)" : "var(--primaryColor)",
           transition: "color 0.2s ease",
+          paddingLeft: "2px",
         }}
       >
         {label}
@@ -76,21 +79,18 @@ function Field({ id, name, label, type, placeholder, autoComplete, error, onClea
         placeholder={placeholder} autoComplete={autoComplete} required
         onChange={() => { if (error && onClearError) onClearError(name); }}
         onInput={type === "tel" ? (e) => { e.target.value = e.target.value.replace(/[^0-9+() \-]/g, ""); } : undefined}
-        className="form-field w-full rounded-2xl bg-white/40 focus:outline-none transition-all duration-200"
+        className="form-field w-full rounded-xl focus:outline-none transition-all duration-200"
         style={{
-          height: "clamp(44px, 5.5vh, 54px)",
-          padding: "0 20px",
-          fontSize: "clamp(0.85rem, 1.1vw, 0.95rem)",
-          border: error
-            ? "1.5px solid var(--redColor)"
-            : "1.5px solid var(--secondaryColor)",
+          height: "clamp(48px, 6vh, 56px)",
+          padding: "0 18px",
+          fontSize: "clamp(0.88rem, 1.1vw, 0.95rem)",
         }}
       />
       {error && (
         <span
-          className="font-medium"
+          className="font-medium animate-slide-down"
           style={{
-            fontSize: "clamp(0.58rem, 0.75vw, 0.68rem)",
+            fontSize: "clamp(0.62rem, 0.8vw, 0.7rem)",
             color: "var(--redColor)",
             paddingLeft: "4px",
           }}
@@ -119,11 +119,11 @@ function PageShell({ children, key: pageKey }) {
 
 /* ─── Services data ────────────────────────────────────────────────────── */
 const SERVICES = [
-  { id: "ai", name: "AI and Automation", desc: "Smart workflows & intelligent tools", icon: Cpu },
-  { id: "web", name: "Website Development & Design", desc: "Modern, responsive web experiences", icon: Globe },
-  { id: "crm", name: "Ribo CRM", desc: "Customer relationship management", icon: Database },
-  { id: "stepup", name: "StepUp", desc: "Business growth & analytics", icon: Zap },
-  { id: "prajek", name: "Projek", desc: "Project management solution", icon: Rocket },
+  { id: "ai", name: "Business Automation", desc: "Streamline repetitive tasks and save time", icon: Cpu },
+  { id: "web", name: "Website & Digital Presence", desc: "Build a strong, conversion-focused online presence", icon: Globe },
+  { id: "crm", name: "Client Management System", desc: "Organize leads, clients, and communications efficiently", icon: Database },
+  { id: "stepup", name: "Business Growth & Performance", desc: "Improve processes, insights, and scalability", icon: Zap },
+  { id: "prajek", name: "Project & Workflow Management", desc: "Keep operations structured and on track", icon: Rocket },
 ];
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -133,7 +133,8 @@ function ServicesPage({ onSelect }) {
   return (
     <PageShell>
       <div
-        className="flex-1 flex flex-col items-center w-full max-w-md sm:max-w-lg lg:max-w-xl"
+        key="services"
+        className="page-transition flex-1 flex flex-col items-center w-full max-w-md sm:max-w-lg lg:max-w-xl"
         style={{
           padding: "clamp(8px, 1.5vh, 20px) 0",
           overflowY: "auto",
@@ -141,56 +142,24 @@ function ServicesPage({ onSelect }) {
         }}
       >
         {/* Header */}
-        <div className="text-center w-full" style={{ marginBottom: "clamp(14px, 2.5vh, 28px)" }}>
-          {/* Chip badge */}
-          <div className="flex justify-center" style={{ marginBottom: "clamp(12px, 2vh, 20px)" }}>
-            <div className="glass-chip inline-flex items-center gap-2 rounded-full"
-              style={{ padding: "6px 16px" }}
-            >
-              <div
-                className="rounded-full"
-                style={{
-                  width: "6px", height: "6px",
-                  background: "var(--accentColor)",
-                  boxShadow: "0 0 6px var(--accentColor)",
-                }}
-              />
-              <span
-                className="font-bold uppercase"
-                style={{
-                  fontSize: "clamp(0.58rem, 0.75vw, 0.65rem)",
-                  letterSpacing: "0.18em",
-                  color: "var(--primaryColor)",
-                }}
-              >
-                Consultation Inquiry
-              </span>
-            </div>
+        <div className="text-center w-full pt-6" style={{ marginBottom: "clamp(14px, 2.5vh, 28px)" }}>
+          <div
+            className="font-bold tracking-tight text-3xl"
+            style={{
+              color: "var(--primaryColor)",
+            }}
+          >
+            How Can We Support Your Business Growth?
           </div>
 
-          <h1
-            className="font-extrabold tracking-tight"
-            style={{
-              fontSize: "clamp(1.5rem, 3.2vw, 2.2rem)",
-              color: "var(--primaryColor)",
-              lineHeight: 1.12,
-            }}
-          >
-            What services are
-            <br />
-            you interested in?
-          </h1>
-
           <p
-            className="font-medium"
+            className="font-medium text-sm mt-2"
             style={{
-              fontSize: "clamp(0.82rem, 1.1vw, 0.92rem)",
               color: "var(--secondaryColor)",
-              marginTop: "clamp(8px, 1.2vh, 14px)",
-              opacity: 0.8,
+              opacity: 0.9,
             }}
           >
-            Select one to personalize your experience
+            Select the area you'd like to explore.
           </p>
         </div>
 
@@ -230,7 +199,7 @@ function ServicesPage({ onSelect }) {
                   style={{
                     fontSize: "clamp(0.65rem, 0.82vw, 0.74rem)",
                     color: "var(--secondaryColor)",
-                    opacity: 0.6,
+                    opacity: 0.8,
                     marginTop: "2px",
                   }}
                 >
@@ -254,7 +223,7 @@ function ServicesPage({ onSelect }) {
           style={{
             fontSize: "clamp(0.64rem, 0.82vw, 0.72rem)",
             color: "var(--secondaryColor)",
-            opacity: 0.4,
+            opacity: 0.9,
             marginTop: "clamp(18px, 3vh, 32px)",
           }}
         >
@@ -271,110 +240,122 @@ function ServicesPage({ onSelect }) {
 function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onBack, onClearError }) {
   return (
     <PageShell>
+      {/* Scrollable area */}
       <div
-        className="flex-1 flex flex-col items-center w-full max-w-sm sm:max-w-md lg:max-w-lg"
-        style={{
-          padding: "clamp(6px, 1vh, 14px) 0",
-          overflowY: "auto",
-          minHeight: 0,
-        }}
+        key="form"
+        className="page-transition flex-1 flex flex-col w-full max-w-2xl mx-auto overflow-y-auto"
+        style={{ padding: "clamp(16px, 3vh, 24px) clamp(20px, 5vw, 40px) 0", minHeight: 0 }}
       >
         {/* Back link */}
-        <div className="w-full" style={{ marginBottom: "clamp(8px, 1.2vh, 14px)" }}>
-          <button
-            onClick={onBack}
-            className="flex items-center gap-1.5 font-semibold transition-all duration-200 hover:opacity-70"
-            style={{
-              color: "var(--secondaryColor)",
-              fontSize: "clamp(0.72rem, 0.95vw, 0.82rem)",
-            }}
-          >
-            <ArrowLeft size={14} strokeWidth={2.5} />
-            Back
-          </button>
-        </div>
+        <button
+          onClick={onBack}
+          className="flex items-center gap-1.5 font-semibold transition-all duration-200 hover:opacity-70 shrink-0"
+          style={{
+            color: "var(--secondaryColor)",
+            fontSize: "clamp(0.75rem, 0.95vw, 0.85rem)",
+            marginBottom: "clamp(20px, 3vh, 32px)",
+            alignSelf: "flex-start",
+          }}
+        >
+          <ArrowLeft size={15} strokeWidth={2.5} />
+          Back
+        </button>
 
         {/* Heading */}
-        <div className="text-center w-full" style={{ marginBottom: "clamp(6px, 1vh, 14px)" }}>
+        <div className="shrink-0" style={{ marginBottom: "clamp(6px, 1vh, 10px)" }}>
+          <p
+            className="font-bold uppercase"
+            style={{
+              fontSize: "clamp(0.62rem, 0.8vw, 0.7rem)",
+              letterSpacing: "0.2em",
+              color: "var(--accentColor)",
+              marginBottom: "8px",
+            }}
+          >
+            Registration
+          </p>
           <h1
             className="font-extrabold tracking-tight"
             style={{
-              fontSize: "clamp(1.5rem, 3.2vw, 2.2rem)",
+              fontSize: "clamp(1.6rem, 3.5vw, 2.4rem)",
               color: "var(--primaryColor)",
-              lineHeight: 1.12,
+              lineHeight: 1.1,
             }}
           >
-            Almost There
+            Let’s Connect
           </h1>
           <p
-            className="font-medium leading-relaxed"
+            className="font-medium"
             style={{
               color: "var(--secondaryColor)",
-              fontSize: "clamp(0.78rem, 1.1vw, 0.9rem)",
-              marginTop: "clamp(5px, 0.7vh, 8px)",
+              fontSize: "clamp(0.82rem, 1.1vw, 0.95rem)",
+              marginTop: "8px",
+              opacity: 0.9,
+              lineHeight: 1.5,
             }}
           >
-            Fill in your details for{" "}
-            <span className="font-bold" style={{ color: "var(--primaryColor)" }}>{selectedService}</span>
+            Share your details and we’ll reach out with tailored insights.
           </p>
         </div>
 
-        {/* Accent divider */}
+        {/* Accent line */}
         <div
-          className="accent-line rounded-full"
+          className="shrink-0"
           style={{
             width: "44px",
-            height: "2px",
-            margin: "clamp(4px, 0.6vh, 8px) auto clamp(12px, 1.5vh, 18px)",
+            height: "2.5px",
+            background: "var(--primaryColor)",
+            borderRadius: "2px",
+            margin: "clamp(14px, 2vh, 22px) 0 clamp(22px, 3vh, 32px)",
           }}
         />
 
-        {/* Form */}
+        {/* Form fields */}
         <form
           id="consultation-form"
-          className="w-full flex flex-col"
-          style={{ gap: "clamp(14px, 2vh, 22px)" }}
+          className="form-grid w-full"
           onSubmit={onSubmit}
           noValidate
         >
-          <Field id="full-name" name="fullName" label="Full Name" type="text" placeholder="e.g. John Doe" autoComplete="name" error={fieldErrors.fullName} onClearError={onClearError} />
-          <Field id="email-address" name="email" label="Email Address" type="email" placeholder="johndoe@gmail.com" autoComplete="email" error={fieldErrors.email} onClearError={onClearError} />
-          <Field id="phone-number" name="phone" label="Phone Number" type="tel" placeholder="+63 912 345 6789" autoComplete="tel" error={fieldErrors.phone} onClearError={onClearError} />
-          <Field id="company-name" name="company" label="Company" type="text" placeholder="e.g. NextGen Innovations" autoComplete="organization" error={fieldErrors.company} onClearError={onClearError} />
+          <Field id="full-name" name="fullName" label="Full Name" type="text" placeholder="Your full name" autoComplete="name" error={fieldErrors.fullName} onClearError={onClearError} />
+          <Field id="email-address" name="email" label="Email Address" type="email" placeholder="Best email to reach you" autoComplete="email" error={fieldErrors.email} onClearError={onClearError} />
+          <Field id="phone-number" name="phone" label="Phone Number" type="tel" placeholder="Mobile number" autoComplete="tel" error={fieldErrors.phone} onClearError={onClearError} />
+          <Field id="company-name" name="company" label="BUsiness Name" type="text" placeholder="Your company or brand name" autoComplete="organization" error={fieldErrors.company} onClearError={onClearError} />
         </form>
       </div>
 
-      {/* Sticky bottom */}
+      {/* Fixed bottom bar */}
       <div
-        className="shrink-0 w-full max-w-sm sm:max-w-md lg:max-w-lg flex flex-col items-center"
+        className="shrink-0 w-full max-w-2xl mx-auto flex flex-col items-center"
         style={{
-          paddingBottom: "clamp(40px, 10vh, 80px)",
-          paddingTop: "clamp(12px, 1.5vh, 18px)",
+          padding: "clamp(16px, 2vh, 24px) clamp(20px, 5vw, 40px) clamp(24px, 4vh, 40px)",
+          borderTop: "1px solid rgba(0,62,134,0.06)",
         }}
       >
         <button
           id="submit-btn" type="submit" form="consultation-form"
           disabled={submitting}
-          className="btn-primary w-full rounded-2xl text-white font-bold hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+          className="btn-primary w-full font-bold uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
           style={{
-            height: "clamp(48px, 6vh, 56px)",
-            fontSize: "clamp(0.88rem, 1.1vw, 1rem)",
+            height: "clamp(52px, 6.5vh, 58px)",
+            fontSize: "clamp(0.74rem, 0.9vw, 0.84rem)",
+            letterSpacing: "0.16em",
           }}
         >
-          {submitting ? "Securing Your Spot…" : "Secure My Spot"}
+          {submitting ? "COnnecting With Our Team" : "Connect With Our Team"}
         </button>
 
         <div
-          className="flex items-center gap-1.5 font-medium"
+          className="flex items-center justify-center gap-1.5 font-medium"
           style={{
             color: "var(--secondaryColor)",
-            fontSize: "clamp(0.6rem, 0.8vw, 0.7rem)",
-            marginTop: "clamp(10px, 1.2vh, 16px)",
-            opacity: 0.5,
+            fontSize: "clamp(0.6rem, 0.78vw, 0.7rem)",
+            marginTop: "clamp(10px, 1.5vh, 16px)",
+            opacity: 0.35,
           }}
         >
           <Shield size={10} strokeWidth={2.2} />
-          <span>Your information is kept private &amp; secure.</span>
+          <span>Your information is protected &amp; secure.</span>
         </div>
       </div>
     </PageShell>
@@ -387,76 +368,148 @@ function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onB
 function SuccessPage({ onScheduleNow, onScheduleLater }) {
   return (
     <PageShell>
-      {/* Content */}
       <div
-        className="flex-1 flex flex-col items-center justify-center text-center w-full max-w-sm px-6"
-        style={{ gap: "clamp(12px, 2vh, 22px)" }}
+        key="success"
+        className="page-transition flex-1 flex flex-col justify-center w-full max-w-2xl mx-auto"
+        style={{ padding: "clamp(16px, 3vh, 24px) clamp(20px, 5vw, 40px)", minHeight: 0 }}
       >
-        {/* Icon with glow */}
-        <div className="animate-scale-in">
-          <BadgeCheck
-            className="success-icon"
-            strokeWidth={1.3}
-            style={{
-              color: "var(--primaryColor)",
-              width: "clamp(60px, 11vh, 88px)",
-              height: "clamp(60px, 11vh, 88px)",
-            }}
-          />
+        <div className="flex items-start gap-4" style={{ marginBottom: "clamp(6px, 1vh, 10px)" }}>
+          <div className="shrink-0" style={{ marginTop: "2px" }}>
+            <BadgeCheck
+              strokeWidth={2}
+              style={{
+                color: "var(--primaryColor)",
+                width: "clamp(36px, 5vh, 48px)",
+                height: "clamp(36px, 5vh, 48px)",
+              }}
+            />
+          </div>
+          <div>
+            <h1
+              className="font-extrabold tracking-tight"
+              style={{
+                fontSize: "clamp(1.6rem, 3.5vw, 2.4rem)",
+                color: "var(--primaryColor)",
+                lineHeight: 1.1,
+              }}
+            >
+              You&apos;re All Set
+            </h1>
+            <p
+              className="font-medium"
+              style={{
+                fontSize: "clamp(0.82rem, 1.1vw, 0.95rem)",
+                color: "var(--secondaryColor)",
+                marginTop: "8px",
+                opacity: 0.9,
+                lineHeight: 1.5,
+              }}
+            >
+              Thank you for your interest. Would you like to schedule a short strategy discussion?
+            </p>
+          </div>
         </div>
 
-        <div>
-          <h1
-            className="font-extrabold tracking-tight"
-            style={{
-              fontSize: "clamp(1.5rem, 3.2vw, 2.2rem)",
-              color: "var(--primaryColor)",
-              lineHeight: 1.1,
-            }}
-          >
-            Spot Secured!
-          </h1>
-          <p
-            className="leading-relaxed max-w-[32ch] mx-auto font-medium"
-            style={{
-              fontSize: "clamp(0.82rem, 1.2vw, 0.95rem)",
-              color: "var(--secondaryColor)",
-              marginTop: "clamp(6px, 1vh, 12px)",
-              opacity: 0.8,
-            }}
-          >
-            Thank you for submitting your details. Would you like to schedule
-            your meeting now or later?
-          </p>
-        </div>
-      </div>
+        {/* Accent line */}
+        <div
+          style={{
+            width: "44px",
+            height: "2.5px",
+            background: "var(--primaryColor)",
+            borderRadius: "2px",
+            margin: "clamp(14px, 2vh, 22px) 0 clamp(22px, 3vh, 32px)",
+          }}
+        />
 
-      {/* Buttons */}
-      <div
-        className="shrink-0 w-full max-w-sm px-6 flex flex-col items-center"
-        style={{
-          gap: "clamp(10px, 1.4vh, 14px)",
-          paddingBottom: "clamp(80px, 18vh, 140px)",
-        }}
-      >
-        <button
-          id="schedule-now-btn"
-          onClick={onScheduleNow}
-          className="btn-primary flex items-center justify-center gap-2.5 w-full text-white font-bold rounded-2xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
-          style={{ height: "clamp(48px, 6vh, 56px)", fontSize: "clamp(0.88rem, 1.1vw, 1rem)" }}
-        >
-          <CalendarCheck size={18} strokeWidth={2} />
-          Schedule Now
-        </button>
-        <button
-          id="schedule-later-btn"
-          onClick={onScheduleLater}
-          className="btn-outline flex items-center justify-center gap-2.5 w-full border-2 font-bold rounded-2xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
-          style={{ height: "clamp(48px, 6vh, 56px)", fontSize: "clamp(0.88rem, 1.1vw, 1rem)" }}
-        >
-          <Clock size={17} strokeWidth={2} />
-          Schedule Later
-        </button>
+        {/* 2-column: Expectations + Buttons */}
+        <div className="form-grid w-full" style={{ alignItems: "start" }}>
+          {/* Left — What to expect */}
+          <div>
+            <p
+              className="font-bold uppercase"
+              style={{
+                fontSize: "clamp(0.6rem, 0.75vw, 0.7rem)",
+                letterSpacing: "0.15em",
+                color: "var(--primaryColor)",
+                marginBottom: "clamp(12px, 1.5vh, 18px)",
+              }}
+            >
+              What to expect
+            </p>
+            {[
+              "Quick review of your current setup",
+              "Identify improvement opportunities",
+              "Outline possible next steps",
+            ].map((item) => (
+              <div
+                key={item}
+                className="flex items-center gap-2.5"
+                style={{ marginBottom: "clamp(10px, 1.2vh, 14px)" }}
+              >
+                <span
+                  className="shrink-0"
+                  style={{
+                    width: "18px",
+                    height: "18px",
+                    borderRadius: "50%",
+                    background: "color-mix(in srgb, var(--accentColor) 12%, transparent)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "0.6rem",
+                    color: "var(--accentColor)",
+                    fontWeight: 700,
+                  }}
+                >
+                  ✓
+                </span>
+                <span
+                  className="font-medium"
+                  style={{
+                    fontSize: "clamp(0.75rem, 0.95vw, 0.85rem)",
+                    color: "var(--secondaryColor)",
+                    opacity: 0.9,
+                  }}
+                >
+                  {item}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Right — Action buttons */}
+          <div className="flex flex-col" style={{ gap: "clamp(10px, 1.4vh, 14px)" }}>
+            <p
+              className="font-bold uppercase"
+              style={{
+                fontSize: "clamp(0.6rem, 0.75vw, 0.7rem)",
+                letterSpacing: "0.15em",
+                color: "var(--primaryColor)",
+                marginBottom: "clamp(2px, 0.4vh, 6px)",
+              }}
+            >
+              Choose an option
+            </p>
+            <button
+              id="schedule-now-btn"
+              onClick={onScheduleNow}
+              className="btn-primary flex items-center justify-center gap-2.5 w-full font-bold uppercase tracking-widest"
+              style={{ height: "clamp(50px, 6vh, 56px)", fontSize: "clamp(0.7rem, 0.88vw, 0.8rem)", letterSpacing: "0.14em" }}
+            >
+              <CalendarCheck size={17} strokeWidth={2} />
+              Schedule Now
+            </button>
+            <button
+              id="schedule-later-btn"
+              onClick={onScheduleLater}
+              className="btn-outline flex items-center justify-center gap-2.5 w-full font-bold uppercase tracking-widest"
+              style={{ height: "clamp(50px, 6vh, 56px)", fontSize: "clamp(0.7rem, 0.88vw, 0.8rem)", letterSpacing: "0.1em" }}
+            >
+              <Clock size={16} strokeWidth={2} />
+              Schedule Later
+            </button>
+          </div>
+        </div>
       </div>
     </PageShell>
   );
@@ -468,80 +521,155 @@ function SuccessPage({ onScheduleNow, onScheduleLater }) {
 function InboxPage({ onBack, onResend }) {
   return (
     <PageShell>
-      {/* Content */}
       <div
-        className="flex-1 flex flex-col items-center justify-center text-center w-full max-w-sm px-6"
-        style={{ gap: "clamp(12px, 2vh, 22px)" }}
+        key="inbox"
+        className="page-transition flex-1 flex flex-col justify-center w-full max-w-2xl mx-auto"
+        style={{ padding: "clamp(16px, 3vh, 24px) clamp(20px, 5vw, 40px)", minHeight: 0 }}
       >
-        <div className="animate-scale-in">
-          <MailOpen
-            className="success-icon"
-            strokeWidth={1.3}
-            style={{
-              color: "var(--primaryColor)",
-              width: "clamp(60px, 11vh, 88px)",
-              height: "clamp(60px, 11vh, 88px)",
-            }}
-          />
+        {/* Header — icon + text */}
+        <div className="flex items-start gap-4" style={{ marginBottom: "clamp(6px, 1vh, 10px)" }}>
+          <div className="shrink-0" style={{ marginTop: "2px" }}>
+            <MailOpen
+              strokeWidth={2}
+              style={{
+                color: "var(--primaryColor)",
+                width: "clamp(36px, 5vh, 48px)",
+                height: "clamp(36px, 5vh, 48px)",
+              }}
+            />
+          </div>
+          <div>
+            <h1
+              className="font-extrabold tracking-tight"
+              style={{
+                fontSize: "clamp(1.6rem, 3.5vw, 2.4rem)",
+                color: "var(--primaryColor)",
+                lineHeight: 1.1,
+              }}
+            >
+              Check Your Inbox
+            </h1>
+            <p
+              className="font-medium"
+              style={{
+                fontSize: "clamp(0.82rem, 1.1vw, 0.95rem)",
+                color: "var(--secondaryColor)",
+                marginTop: "8px",
+                opacity: 0.9,
+                lineHeight: 1.5,
+              }}
+            >
+              We&apos;ve sent you an email with your booking link. You can schedule your meeting anytime.
+            </p>
+          </div>
         </div>
 
-        <div>
-          <h1
-            className="font-extrabold tracking-tight"
-            style={{
-              color: "var(--primaryColor)",
-              fontSize: "clamp(1.5rem, 3.2vw, 2.2rem)",
-              lineHeight: 1.1,
-            }}
-          >
-            Check Your Inbox
-          </h1>
-          <p
-            className="leading-relaxed max-w-[32ch] mx-auto font-medium"
-            style={{
-              color: "var(--secondaryColor)",
-              fontSize: "clamp(0.82rem, 1.2vw, 0.95rem)",
-              marginTop: "clamp(6px, 1vh, 12px)",
-              opacity: 0.8,
-            }}
-          >
-            We&apos;ve sent you an email with your booking link.
-            You can schedule your meeting anytime.
-          </p>
-        </div>
-      </div>
-
-      {/* Buttons */}
-      <div
-        className="shrink-0 w-full max-w-sm px-6 flex flex-col items-center"
-        style={{
-          gap: "clamp(10px, 1.4vh, 14px)",
-          paddingBottom: "clamp(80px, 18vh, 140px)",
-        }}
-      >
-        <button
-          id="got-it-btn"
-          onClick={onBack}
-          className="btn-primary w-full text-white font-bold rounded-2xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
-          style={{ height: "clamp(48px, 6vh, 56px)", fontSize: "clamp(0.88rem, 1.1vw, 1rem)" }}
-        >
-          Got It
-        </button>
-        <button
-          id="resend-email-btn"
-          onClick={onResend}
-          className="font-semibold transition-all duration-200 hover:opacity-100"
+        {/* Accent line */}
+        <div
           style={{
-            color: "var(--primaryColor)",
-            fontSize: "clamp(0.78rem, 1vw, 0.88rem)",
-            opacity: 0.55,
-            textDecoration: "underline",
-            textDecorationColor: "color-mix(in srgb, var(--primaryColor) 30%, transparent)",
-            textUnderlineOffset: "3px",
+            width: "44px",
+            height: "2.5px",
+            background: "var(--primaryColor)",
+            borderRadius: "2px",
+            margin: "clamp(14px, 2vh, 22px) 0 clamp(22px, 3vh, 32px)",
           }}
-        >
-          Resend Email
-        </button>
+        />
+
+        {/* 2-column: Next steps + Action */}
+        <div className="form-grid w-full" style={{ alignItems: "start" }}>
+          {/* Left — What happens next */}
+          <div>
+            <p
+              className="font-bold uppercase"
+              style={{
+                fontSize: "clamp(0.6rem, 0.75vw, 0.7rem)",
+                letterSpacing: "0.15em",
+                color: "var(--primaryColor)",
+                marginBottom: "clamp(12px, 1.5vh, 18px)",
+              }}
+            >
+              What happens next
+            </p>
+            {[
+              { num: "1", text: "Check your email for the booking link" },
+              { num: "2", text: "Choose a time that works for you" },
+              { num: "3", text: "We\u2019ll confirm your appointment" },
+            ].map((step) => (
+              <div
+                key={step.num}
+                className="flex items-center gap-2.5"
+                style={{ marginBottom: "clamp(10px, 1.2vh, 14px)" }}
+              >
+                <span
+                  className="shrink-0 font-bold"
+                  style={{
+                    width: "20px",
+                    height: "20px",
+                    borderRadius: "50%",
+                    background: "color-mix(in srgb, var(--primaryColor) 10%, transparent)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "0.6rem",
+                    color: "var(--primaryColor)",
+                  }}
+                >
+                  {step.num}
+                </span>
+                <span
+                  className="font-medium"
+                  style={{
+                    fontSize: "clamp(0.75rem, 0.95vw, 0.85rem)",
+                    color: "var(--secondaryColor)",
+                    opacity: 0.8,
+                  }}
+                >
+                  {step.text}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Right — Actions */}
+          <div className="flex flex-col" style={{ gap: "clamp(10px, 1.4vh, 14px)" }}>
+            <p
+              className="font-bold uppercase"
+              style={{
+                fontSize: "clamp(0.6rem, 0.75vw, 0.7rem)",
+                letterSpacing: "0.15em",
+                color: "var(--primaryColor)",
+                marginBottom: "clamp(2px, 0.4vh, 6px)",
+              }}
+            >
+              You&apos;re all set
+            </p>
+            <button
+              id="got-it-btn"
+              onClick={onBack}
+              className="btn-primary w-full font-bold uppercase tracking-widest"
+              style={{ height: "clamp(50px, 6vh, 56px)", fontSize: "clamp(0.7rem, 0.88vw, 0.8rem)", letterSpacing: "0.14em" }}
+            >
+              Got It
+            </button>
+            <button
+              id="resend-email-btn"
+              onClick={onResend}
+              className="font-semibold opacity-50 transition-all duration-200 hover:opacity-100 active:scale-95 active:opacity-100"
+              style={{
+                color: "var(--primaryColor)",
+                fontSize: "clamp(0.72rem, 0.92vw, 0.82rem)",
+                textDecoration: "underline",
+                textDecorationColor:
+                  "color-mix(in srgb, var(--primaryColor) 25%, transparent)",
+                textUnderlineOffset: "3px",
+                textAlign: "center",
+                marginTop: "4px",
+              }}
+            >
+              Didn&apos;t receive it? Resend email
+            </button>
+          </div>
+        </div>
       </div>
     </PageShell>
   );
