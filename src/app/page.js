@@ -324,21 +324,6 @@ function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onB
           <Field id="email-address" name="email" label="Email Address" type="email" placeholder="Best email to reach you" autoComplete="email" error={fieldErrors.email} onClearError={onClearError} />
           <Field id="phone-number" name="phone" label="Phone Number" type="tel" placeholder="Mobile number" autoComplete="tel" error={fieldErrors.phone} onClearError={onClearError} />
           <Field id="company-name" name="company" label="Business Name" type="text" placeholder="Your company or brand name" autoComplete="organization" error={fieldErrors.company} onClearError={onClearError} />
-
-          {/* Explicit Consent Checkbox for Anti-Spam Compliance */}
-          <div className="col-span-full flex items-start gap-3 mt-4">
-            <input
-              id="consent"
-              name="consent"
-              type="checkbox"
-              required
-              className="mt-1 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-            />
-            <label htmlFor="consent" className="text-xs text-gray-600 leading-relaxed cursor-pointer font-medium">
-              I agree to receive occasional follow-up emails and resources from StartupLab regarding my inquiry.
-              <span className="block mt-0.5 opacity-60">You can unsubscribe at any time.</span>
-            </label>
-          </div>
         </form>
       </div>
 
@@ -350,6 +335,11 @@ function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onB
           // borderTop: "1px solid rgba(0,62,134,0.06)",
         }}
       >
+        <p className="text-center opacity-60 font-medium mb-4 leading-relaxed" style={{ fontSize: "clamp(0.65rem, 0.8vw, 0.72rem)", color: "var(--secondaryColor)" }}>
+          By connecting, you agree to receive occasional follow-up emails
+          regarding your inquiry. You can unsubscribe at any time.
+        </p>
+
         <button
           id="submit-btn" type="submit" form="consultation-form"
           disabled={submitting}
@@ -376,7 +366,7 @@ function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onB
           <span>Your information is protected &amp; secure.</span>
         </div>
       </div>
-    </PageShell>
+    </PageShell >
   );
 }
 
