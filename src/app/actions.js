@@ -36,15 +36,11 @@ export async function submitLead(formData) {
     const BREVO_API_KEY = process.env.BREVO_API_KEY;
     const BREVO_LIST_ID = parseInt(process.env.BREVO_LIST_ID || "0");
 
-    // Track success of different branches
-    let crmSuccess = false;
-    let brevoSuccess = false;
-
-    // 1. Post to your Custom CRM Webhook (Kasalang Tagaytay source)
-    // We use a shorter timeout for this because we don't want to hang the UI for 50s.
-    if (CRM_WEBHOOK_URL) {
+    // 1. CRM Sync Task (Parallel)
+    const crmTask = (async () => {
+        if (!CRM_WEBHOOK_URL) return false;
         try {
-            const crmResponse = await fetchWithRetry(CRM_WEBHOOK_URL, {
+            const res = await fetchWithRetry(CRM_WEBHOOK_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -55,24 +51,23 @@ export async function submitLead(formData) {
                     notes: `Interested in: ${interestedService}${bookingStatus ? `\nBooking Status: ${bookingStatus}` : ""}`,
                     source: "Kasalang Tagaytay",
                 }),
-            }, 1, 8000); // 1 retry, 8s timeout
-
-            crmSuccess = crmResponse.ok;
-            if (crmSuccess) console.log("Direct CRM Sync: Success");
-        } catch (err) {
-            console.error("Direct CRM Sync Error (Timed out or unreachable):", err.message);
+            }, 1, 6000); // 1 retry, 6s timeout
+            return res.ok;
+        } catch (e) {
+            console.error("CRM Task Error:", e.message);
+            return false;
         }
-    }
+    })();
 
-    // 2. Post to Brevo API
-    if (BREVO_API_KEY && BREVO_LIST_ID) {
+    // 2. Brevo Sync Task (Parallel)
+    const brevoTask = (async () => {
+        if (!BREVO_API_KEY || !BREVO_LIST_ID) return { success: false };
         try {
-            const brevoUrl = "https://api.brevo.com/v3/contacts";
             const nameParts = fullName.split(" ");
             const firstName = nameParts[0];
             const lastName = nameParts.slice(1).join(" ") || "-";
 
-            const response = await fetchWithRetry(brevoUrl, {
+            const res = await fetchWithRetry("https://api.brevo.com/v3/contacts", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -91,39 +86,40 @@ export async function submitLead(formData) {
                     listIds: [BREVO_LIST_ID],
                     updateEnabled: true
                 }),
-            }, 2, 12000);
+            }, 1, 10000); // 1 retry, 10s timeout
 
-            if (response.ok) {
-                brevoSuccess = true;
-                console.log("Direct Brevo Sync: Success");
-            } else {
-                const brevoError = await response.json();
-                console.error("Brevo API Response Error:", brevoError);
+            if (res.ok) return { success: true };
 
-                // If it's a duplicate PHONE error (unlikely) or parameter error
-                if (brevoError.code === 'duplicate_parameter' || brevoError.message?.includes('PHONE')) {
-                    return {
-                        success: false,
-                        error: "This phone number is already registered. Please use a different one.",
-                        field: "phone"
-                    };
-                }
+            const error = await res.json();
+            if (error.code === 'duplicate_parameter' || error.message?.includes('PHONE')) {
+                return {
+                    success: false,
+                    field: "phone",
+                    error: "This phone number is already registered. Please use a different one."
+                };
             }
-        } catch (err) {
-            console.error("Direct Brevo Connectivity Error:", err.message);
+            return { success: false };
+        } catch (e) {
+            console.error("Brevo Task Error:", e.message);
+            return { success: false };
         }
+    })();
+
+    // Execute both in parallel - total time will be the maximum of the two tasks
+    const [crmOk, brevoResult] = await Promise.all([crmTask, brevoTask]);
+
+    // Handle results
+    if (brevoResult.field) {
+        return brevoResult; // Pass back field error (e.g. duplicate phone)
     }
 
-    // Final result to the UI
-    // If either one worked (CRM or Brevo), we tell the user "Success" 
-    // so they can move on at the expo.
-    if (crmSuccess || brevoSuccess) {
+    if (crmOk || brevoResult.success) {
+        if (crmOk) console.log("Direct CRM Sync: Parallel Success");
+        if (brevoResult.success) console.log("Direct Brevo Sync: Parallel Success");
         return { success: true };
-    } else {
-        // Even if both fail, if it was a network timeout, we might want to return success 
-        // anyway and log it, but let's be honest for now.
-        return { success: false, error: "Submission failed. Please check your internet connection." };
     }
+
+    return { success: false, error: "Submission failed. Please check your internet connection." };
 }
 
 /**
