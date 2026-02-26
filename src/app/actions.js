@@ -78,6 +78,7 @@ export async function submitLead(formData) {
                     attributes: {
                         FIRSTNAME: firstName,
                         LASTNAME: lastName,
+                        FULLNAME: fullName,
                         COMPANY: company,
                         PHONE: phone,
                         INTERESTED_SERVICE: interestedService,
