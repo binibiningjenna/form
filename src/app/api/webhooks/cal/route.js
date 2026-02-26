@@ -16,10 +16,10 @@ export async function POST(request) {
 
             console.log(`Cal.com Webhook: User ${name} (${email}) booked!`);
 
-            // Update MailerLite status to 'booked' to stop reminders
+            // Update Brevo status to 'booked' to stop reminders
             await updateBookingStatus(email, "booked");
 
-            return NextResponse.json({ success: true, message: "MailerLite updated" });
+            return NextResponse.json({ success: true, message: "Brevo updated" });
         }
 
         return NextResponse.json({ success: true, message: "Event ignored" });

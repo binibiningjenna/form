@@ -1,60 +1,20 @@
 "use server";
 
 /**
- * Private helper to find or create a group ID by name in MailerLite.
- * In MailerLite Connect API, "tags" are managed via their "Groups" system.
- */
-async function ensureGroup(groupName) {
-    const ML_API_KEY = process.env.MAILERLITE_API_KEY;
-    if (!ML_API_KEY) return null;
-
-    try {
-        // 1. Search for existing group
-        const searchUrl = `https://connect.mailerlite.com/api/groups?filter[name]=${encodeURIComponent(groupName)}`;
-        const searchRes = await fetch(searchUrl, {
-            headers: { "Authorization": `Bearer ${ML_API_KEY}`, "Accept": "application/json" }
-        });
-        if (!searchRes.ok) return null;
-        const searchData = await searchRes.json();
-
-        if (searchData.data && searchData.data.length > 0) {
-            return searchData.data[0].id;
-        }
-
-        // 2. Not found, create it
-        const createUrl = `https://connect.mailerlite.com/api/groups`;
-        const createRes = await fetch(createUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "Authorization": `Bearer ${ML_API_KEY}`,
-            },
-            body: JSON.stringify({ name: groupName })
-        });
-        if (!createRes.ok) return null;
-        const createData = await createRes.json();
-        return createData.data?.id || null;
-    } catch (err) {
-        console.error(`Error ensuring group ${groupName}:`, err);
-        return null;
-    }
-}
-
-/**
  * Server Action to handle lead submission directly to both your custom CRM 
- * and MailerLite, completely bypassing Make.com.
+ * and Brevo (formerly Sendinblue).
  */
 export async function submitLead(formData) {
     const { fullName, email, phone, company, interestedService, bookingStatus } = formData;
 
     // Configuration
     const CRM_WEBHOOK_URL = process.env.CRM_WEBHOOK_URL;
-    const ML_API_KEY = process.env.MAILERLITE_API_KEY;
+    const BREVO_API_KEY = process.env.BREVO_API_KEY;
+    const BREVO_LIST_ID = parseInt(process.env.BREVO_LIST_ID || "0");
 
     // Track success of different branches
     let crmSuccess = false;
-    let mailerliteSuccess = false;
+    let brevoSuccess = false;
 
     // 1. Post to your Custom CRM Webhook (Kasalang Tagaytay source)
     if (CRM_WEBHOOK_URL) {
@@ -78,68 +38,53 @@ export async function submitLead(formData) {
         }
     }
 
-    // 2. Post to MailerLite API
-    if (ML_API_KEY) {
+    // 2. Post to Brevo API
+    if (BREVO_API_KEY && BREVO_LIST_ID) {
         try {
-            // MailerLite API URL for creating/updating a subscriber
-            const mlUrl = `https://connect.mailerlite.com/api/subscribers`;
+            const brevoUrl = "https://api.brevo.com/v3/contacts";
 
-            const groups = ["180374262508422229"]; // Default: Kasalang Tagaytay Leads group
+            // Split name for Brevo defaults
+            const nameParts = fullName.split(" ");
+            const firstName = nameParts[0];
+            const lastName = nameParts.slice(1).join(" ") || "-";
 
-            // Add categorical groups (In MailerLite, these act as tags)
-            const serviceGroup = await ensureGroup(interestedService);
-            if (serviceGroup) groups.push(serviceGroup);
-
-            if (bookingStatus) {
-                const statusName = `Booking_${bookingStatus.charAt(0).toUpperCase() + bookingStatus.slice(1)}`;
-                const statusGroup = await ensureGroup(statusName);
-                if (statusGroup) groups.push(statusGroup);
-
-                // DEFAULT BEHAVIOR: If they just answered the form (pending),
-                // we automatically add them to the "Later" group so reminders
-                // start immediately in case they close the browser.
-                if (bookingStatus === "pending") {
-                    const reminderGroup = await ensureGroup("Booking_Later");
-                    if (reminderGroup) groups.push(reminderGroup);
-                }
-            }
-
-            const mlResponse = await fetch(mlUrl, {
+            const response = await fetch(brevoUrl, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Accept": "application/json",
-                    "Authorization": `Bearer ${ML_API_KEY}`,
+                    "api-key": BREVO_API_KEY,
                 },
                 body: JSON.stringify({
                     email: email,
-                    fields: {
-                        name: fullName.split(" ")[0],
-                        last_name: fullName.split(" ").slice(1).join(" ") || "",
-                        company: company,
-                        phone: phone,
-                        booking_status: bookingStatus || "pending",
+                    attributes: {
+                        FIRSTNAME: firstName,
+                        LASTNAME: lastName,
+                        COMPANY: company,
+                        SMS: phone, // Brevo uses SMS field for phone numbers
+                        INTERESTED_SERVICE: interestedService,
+                        BOOKING_STATUS: bookingStatus || "pending"
                     },
-                    groups: groups
+                    listIds: [BREVO_LIST_ID],
+                    updateEnabled: true // Updates contact if they already exist
                 }),
             });
 
-            if (mlResponse.ok) {
-                mailerliteSuccess = true;
-                console.log("Direct MailerLite Sync: Success");
+            if (response.ok) {
+                brevoSuccess = true;
+                console.log("Direct Brevo Sync: Success");
             } else {
-                const mlError = await mlResponse.json();
-                console.error("MailerLite API Error:", mlError);
+                const brevoError = await response.json();
+                console.error("Brevo API Error:", brevoError);
             }
         } catch (err) {
-            console.error("Direct MailerLite Sync Error:", err);
+            console.error("Direct Brevo Sync Error:", err);
         }
     } else {
-        console.warn("MAILERLITE_API_KEY is missing.");
+        console.warn("BREVO_API_KEY or BREVO_LIST_ID is missing.");
     }
 
     // Final result to the UI
-    if (crmSuccess || mailerliteSuccess) {
+    if (crmSuccess || brevoSuccess) {
         return { success: true };
     } else {
         return { success: false, error: "Submission failed. Please check your credentials." };
@@ -147,32 +92,34 @@ export async function submitLead(formData) {
 }
 
 /**
- * Updates the booking status for an existing lead in MailerLite.
+ * Updates the booking status for an existing lead in Brevo.
  */
 export async function updateBookingStatus(email, status) {
-    const ML_API_KEY = process.env.MAILERLITE_API_KEY;
-    if (!ML_API_KEY) return { success: false, error: "API Key missing" };
+    const BREVO_API_KEY = process.env.BREVO_API_KEY;
+    if (!BREVO_API_KEY) return { success: false, error: "API Key missing" };
 
     try {
-        const groupName = `Booking_${status.charAt(0).toUpperCase() + status.slice(1)}`;
-        const groupId = await ensureGroup(groupName);
+        const brevoUrl = `https://api.brevo.com/v3/contacts/${encodeURIComponent(email)}`;
 
-        const mlUrl = `https://connect.mailerlite.com/api/subscribers`;
-        const response = await fetch(mlUrl, {
-            method: "POST",
+        const response = await fetch(brevoUrl, {
+            method: "PUT",
             headers: {
                 "Content-Type": "application/json",
-                "Accept": "application/json",
-                "Authorization": `Bearer ${ML_API_KEY}`,
+                "api-key": BREVO_API_KEY,
             },
             body: JSON.stringify({
-                email: email,
-                fields: {
-                    booking_status: status,
-                },
-                groups: groupId ? [groupId] : []
+                attributes: {
+                    BOOKING_STATUS: status,
+                }
             }),
         });
+
+        if (response.ok) {
+            console.log(`Brevo Status Update: ${email} marked as ${status}`);
+        } else {
+            const errData = await response.json();
+            console.error("Brevo Update Error:", errData);
+        }
 
         return { success: response.ok };
     } catch (err) {

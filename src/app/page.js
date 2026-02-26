@@ -321,6 +321,21 @@ function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onB
           <Field id="email-address" name="email" label="Email Address" type="email" placeholder="Best email to reach you" autoComplete="email" error={fieldErrors.email} onClearError={onClearError} />
           <Field id="phone-number" name="phone" label="Phone Number" type="tel" placeholder="Mobile number" autoComplete="tel" error={fieldErrors.phone} onClearError={onClearError} />
           <Field id="company-name" name="company" label="BUsiness Name" type="text" placeholder="Your company or brand name" autoComplete="organization" error={fieldErrors.company} onClearError={onClearError} />
+
+          {/* Explicit Consent Checkbox for Anti-Spam Compliance */}
+          <div className="col-span-full flex items-start gap-3 mt-4">
+            <input
+              id="consent"
+              name="consent"
+              type="checkbox"
+              required
+              className="mt-1 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+            />
+            <label htmlFor="consent" className="text-xs text-gray-600 leading-relaxed cursor-pointer font-medium">
+              I agree to receive occasional follow-up emails and resources from StartupLab regarding my inquiry.
+              <span className="block mt-0.5 opacity-60">You can unsubscribe at any time.</span>
+            </label>
+          </div>
         </form>
       </div>
 
