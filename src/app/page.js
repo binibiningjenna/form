@@ -60,7 +60,7 @@ function Logo({ compact = false }) {
 /* ─── Field ────────────────────────────────────────────────────────────── */
 function Field({ id, name, label, type, placeholder, autoComplete, error, onClearError }) {
   return (
-    <div className="flex flex-col" style={{ gap: "6px" }}>
+    <div className="flex flex-col" style={{ gap: "4px" }}>
       <label
         htmlFor={id}
         className="font-bold uppercase"
@@ -244,16 +244,19 @@ function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onB
       <div
         key="form"
         className="page-transition flex-1 flex flex-col w-full max-w-2xl mx-auto overflow-y-auto"
-        style={{ padding: "clamp(16px, 3vh, 24px) clamp(20px, 5vw, 40px) 0", minHeight: 0 }}
+        style={{
+          padding: "clamp(12px, 2vh, 20px) clamp(16px, 5vw, 30px) 0", // smaller top/bottom padding
+          minHeight: 0,
+        }}
       >
-        {/* Back link */}
+        {/* Back button */}
         <button
           onClick={onBack}
           className="flex items-center gap-1.5 font-semibold transition-all duration-200 hover:opacity-70 shrink-0"
           style={{
             color: "var(--secondaryColor)",
-            fontSize: "clamp(0.75rem, 0.95vw, 0.85rem)",
-            marginBottom: "clamp(20px, 3vh, 32px)",
+            fontSize: "clamp(0.7rem, 0.9vw, 0.8rem)", // slightly smaller
+            marginBottom: "clamp(14px, 2vh, 24px)",
             alignSelf: "flex-start",
           }}
         >
@@ -261,15 +264,15 @@ function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onB
           Back
         </button>
 
-        {/* Heading */}
-        <div className="shrink-0" style={{ marginBottom: "clamp(6px, 1vh, 10px)" }}>
+        {/* Headings */}
+        <div className="shrink-0" style={{ marginBottom: "clamp(4px, 1vh, 8px)" }}>
           <p
             className="font-bold uppercase"
             style={{
-              fontSize: "clamp(0.62rem, 0.8vw, 0.7rem)",
+              fontSize: "clamp(0.6rem, 0.8vw, 0.7rem)",
               letterSpacing: "0.2em",
               color: "var(--accentColor)",
-              marginBottom: "8px",
+              marginBottom: "6px",
             }}
           >
             Registration
@@ -277,7 +280,7 @@ function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onB
           <h1
             className="font-extrabold tracking-tight"
             style={{
-              fontSize: "clamp(1.6rem, 3.5vw, 2.4rem)",
+              fontSize: "clamp(1.4rem, 3vw, 2rem)",
               color: "var(--primaryColor)",
               lineHeight: 1.1,
             }}
@@ -288,10 +291,10 @@ function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onB
             className="font-medium"
             style={{
               color: "var(--secondaryColor)",
-              fontSize: "clamp(0.82rem, 1.1vw, 0.95rem)",
-              marginTop: "8px",
+              fontSize: "clamp(0.78rem, 1vw, 0.9rem)",
+              marginTop: "4px",
               opacity: 0.9,
-              lineHeight: 1.5,
+              lineHeight: 1.4,
             }}
           >
             Share your details and we’ll reach out with tailored insights.
@@ -306,7 +309,7 @@ function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onB
             height: "2.5px",
             background: "var(--primaryColor)",
             borderRadius: "2px",
-            margin: "clamp(14px, 2vh, 22px) 0 clamp(22px, 3vh, 32px)",
+            margin: "clamp(10px, 1.5vh, 16px) 0 clamp(16px, 2vh, 24px)",
           }}
         />
 
@@ -320,7 +323,7 @@ function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onB
           <Field id="full-name" name="fullName" label="Full Name" type="text" placeholder="Your full name" autoComplete="name" error={fieldErrors.fullName} onClearError={onClearError} />
           <Field id="email-address" name="email" label="Email Address" type="email" placeholder="Best email to reach you" autoComplete="email" error={fieldErrors.email} onClearError={onClearError} />
           <Field id="phone-number" name="phone" label="Phone Number" type="tel" placeholder="Mobile number" autoComplete="tel" error={fieldErrors.phone} onClearError={onClearError} />
-          <Field id="company-name" name="company" label="BUsiness Name" type="text" placeholder="Your company or brand name" autoComplete="organization" error={fieldErrors.company} onClearError={onClearError} />
+          <Field id="company-name" name="company" label="Business Name" type="text" placeholder="Your company or brand name" autoComplete="organization" error={fieldErrors.company} onClearError={onClearError} />
 
           {/* Explicit Consent Checkbox for Anti-Spam Compliance */}
           <div className="col-span-full flex items-start gap-3 mt-4">
@@ -343,8 +346,8 @@ function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onB
       <div
         className="shrink-0 w-full max-w-2xl mx-auto flex flex-col items-center"
         style={{
-          padding: "clamp(16px, 2vh, 24px) clamp(20px, 5vw, 40px) clamp(24px, 4vh, 40px)",
-          borderTop: "1px solid rgba(0,62,134,0.06)",
+          padding: "clamp(24px, 2vh, 24px) clamp(20px, 5vw, 40px) clamp(72px, 10vh, 96px)",
+          // borderTop: "1px solid rgba(0,62,134,0.06)",
         }}
       >
         <button
@@ -357,7 +360,7 @@ function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onB
             letterSpacing: "0.16em",
           }}
         >
-          {submitting ? "COnnecting With Our Team" : "Connect With Our Team"}
+          {submitting ? "Connecting With Our Team" : "Connect With Our Team"}
         </button>
 
         <div
@@ -608,7 +611,7 @@ function InboxPage({ onBack, onResend }) {
             {[
               { num: "1", text: "Check your email for the booking link" },
               { num: "2", text: "Choose a time that works for you" },
-              { num: "3", text: "We\u2019ll confirm your appointment" },
+              { num: "3", text: "We’ll confirm your appointment" },
             ].map((step) => (
               <div
                 key={step.num}
@@ -752,7 +755,7 @@ function SchedulePage({ onBack, email, name }) {
       action: "bookingSuccessful",
       callback: (e) => {
         console.log("Cal.com Booking Success Event Captured:", e);
-        // Automatically mark as booked in MailerLite to stop reminders
+        // Automatically mark as booked in the email provider to stop reminders
         if (email) {
           updateBookingStatus(email, "booked");
         }
