@@ -1,7 +1,26 @@
 "use server";
 
 /**
- * Server Action to handle lead submission directly to both your custom CRM 
+ * Helper to fetch with retry logic
+ */
+async function fetchWithRetry(url, options, retries = 2) {
+    for (let i = 0; i <= retries; i++) {
+        try {
+            const response = await fetch(url, {
+                ...options,
+                signal: AbortSignal.timeout(15000) // 15s timeout
+            });
+            return response;
+        } catch (err) {
+            if (i === retries) throw err;
+            console.warn(`Fetch failed (attempt ${i + 1}/${retries + 1}), retrying in 1s...`);
+            await new Promise(res => setTimeout(res, 1000));
+        }
+    }
+}
+
+/**
+ * Server Action to handle lead submission directly to both your custom CRM
  * and Brevo (formerly Sendinblue).
  */
 export async function submitLead(formData) {
@@ -19,7 +38,7 @@ export async function submitLead(formData) {
     // 1. Post to your Custom CRM Webhook (Kasalang Tagaytay source)
     if (CRM_WEBHOOK_URL) {
         try {
-            const crmResponse = await fetch(CRM_WEBHOOK_URL, {
+            const crmResponse = await fetchWithRetry(CRM_WEBHOOK_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -48,7 +67,7 @@ export async function submitLead(formData) {
             const firstName = nameParts[0];
             const lastName = nameParts.slice(1).join(" ") || "-";
 
-            const response = await fetch(brevoUrl, {
+            const response = await fetchWithRetry(brevoUrl, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -87,7 +106,7 @@ export async function submitLead(formData) {
     if (crmSuccess || brevoSuccess) {
         return { success: true };
     } else {
-        return { success: false, error: "Submission failed. Please check your credentials." };
+        return { success: false, error: "Submission failed. Network or configuration error." };
     }
 }
 
@@ -101,7 +120,7 @@ export async function updateBookingStatus(email, status) {
     try {
         const brevoUrl = `https://api.brevo.com/v3/contacts/${encodeURIComponent(email)}`;
 
-        const response = await fetch(brevoUrl, {
+        const response = await fetchWithRetry(brevoUrl, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -112,7 +131,7 @@ export async function updateBookingStatus(email, status) {
                     BOOKING_STATUS: status,
                 }
             }),
-        });
+        }, 1); // 1 retry for status updates
 
         if (response.ok) {
             console.log(`Brevo Status Update: ${email} marked as ${status}`);
