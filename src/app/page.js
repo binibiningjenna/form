@@ -160,17 +160,14 @@ function Field({ id, name, label, type, placeholder, autoComplete, error, onClea
 function PageShell({ children }) {
   return (
     <div
-      className="relative z-10 w-full h-screen flex flex-col overflow-hidden items-center"
+      className="relative z-10 w-full h-screen flex flex-col overflow-hidden items-center mb-4"
       style={{ padding: "clamp(16px, 3vh, 32px) clamp(20px, 4vw, 32px) 0" }}
     >
-      {/* Logo stays top */}
       <div className="shrink-0 w-full flex justify-center">
         <Logo />
       </div>
 
-      {/* Scroll area */}
       <div className="flex-1 min-h-0 w-full overflow-y-auto">
-        {/* Centered content wrapper */}
         <div className="w-full max-w-2xl mx-auto flex flex-col items-center">
           {children}
         </div>
@@ -385,7 +382,7 @@ function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onB
           paddingBottom: "clamp(52px, 7vh, 84px)",
         }}
       >
-        <p className="text-center opacity-60 font-medium mb-4 leading-relaxed" style={{ fontSize: "clamp(0.65rem, 0.8vw, 0.72rem)", color: "var(--secondaryColor)" }}>
+        <p className="text-center opacity-60 font-medium mb-2 leading-relaxed" style={{ fontSize: "clamp(0.65rem, 0.8vw, 0.72rem)", color: "var(--secondaryColor)" }}>
           By connecting, you agree to receive follow-up emails about your inquiry. Unsubscribe anytime.
         </p>
 
@@ -427,7 +424,7 @@ function SuccessPage({ onScheduleNow, onScheduleLater, onBack }) {
     <PageShell>
       <div
         key="success"
-        className="page-transition flex-1 flex flex-col justify-center w-full max-w-2xl mx-auto"
+        className="page-transition flex-1 flex flex-col justify-center w-full max-w-2xl mx-auto mt-20 md:mt-20"
         style={{ padding: "clamp(16px, 3vh, 24px) clamp(20px, 5vw, 40px)", minHeight: 0 }}
       >
         {/* Back button */}
@@ -606,7 +603,7 @@ function InboxPage({ onBack, onResend }) {
     <PageShell>
       <div
         key="inbox"
-        className="page-transition flex-1 flex flex-col justify-center w-full max-w-2xl mx-auto"
+        className="page-transition flex-1 flex flex-col justify-center w-full max-w-2xl mx-auto mt-30"
         style={{ padding: "clamp(16px, 3vh, 24px) clamp(20px, 5vw, 40px)", minHeight: 0 }}
       >
         {/* Header — icon + text */}
@@ -658,9 +655,7 @@ function InboxPage({ onBack, onResend }) {
           }}
         />
 
-        {/* 2-column: Next steps + Action */}
         <div className="form-grid w-full" style={{ alignItems: "start" }}>
-          {/* Left — What happens next */}
           <div>
             <p
               className="font-bold uppercase"
