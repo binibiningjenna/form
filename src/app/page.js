@@ -378,11 +378,11 @@ function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onB
       </div>
 
       <div
-        className="shrink-0 w-full max-w-2xl mx-auto flex flex-col items-center pt-6 md:pt-20 lg:pt-30"
+        className="shrink-0 w-full max-w-2xl mx-auto flex flex-col items-center pt-6 md:pt-20 lg:pt-25"
         style={{
           paddingLeft: "clamp(20px, 5vw, 40px)",
           paddingRight: "clamp(20px, 5vw, 40px)",
-          paddingBottom: "clamp(40px,6vh,64px)",
+          paddingBottom: "clamp(52px, 7vh, 84px)",
         }}
       >
         <p className="text-center opacity-60 font-medium mb-4 leading-relaxed" style={{ fontSize: "clamp(0.65rem, 0.8vw, 0.72rem)", color: "var(--secondaryColor)" }}>
