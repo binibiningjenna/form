@@ -91,7 +91,7 @@ html, body {
 .form-field {
   color: var(--primaryColor) !important;
   border: 1.5px solid rgba(0, 62, 134, 0.12);
-  background: rgba(255, 255, 255, 0.45);
+  background: rgba(201, 224, 255, 0.186);
   transition: all 0.25s ease;
 }
 .form-field.error,
@@ -114,7 +114,7 @@ html, body {
   cursor: pointer;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(223, 240, 248, 0.348);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .service-card:hover {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   BadgeCheck, CalendarCheck, Clock, MailOpen,
   Cpu, Globe, Database, Rocket, Zap,
@@ -8,31 +8,84 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 
-/* ─── Background gradient ──────────────────────────────────────────────── */
-const BG = {
-  background:
-    "linear-gradient(175deg,#e8f6fd 0%,#E3F2FB 30%,#cde9f7 65%,#b3dcf3 100%)",
-};
+/* ─── Video background ───────────────────────────────────────────────────── */
+function VideoBg() {
+  const vid1 = useRef(null);
+  const vid2 = useRef(null);
+  const [active, setActive] = useState(1);
+  const activeRef = useRef(1);
+  const isTransitioning = useRef(false);
 
-/* ─── Wave background ──────────────────────────────────────────────────── */
-function WaveBg() {
+  useEffect(() => {
+    const v1 = vid1.current;
+    const v2 = vid2.current;
+
+    if (!v1 || !v2) return;
+
+    v1.play().catch(() => { });
+
+    let rAF;
+    const checkTime = () => {
+      const currentVid = activeRef.current === 1 ? v1 : v2;
+      const nextVid = activeRef.current === 1 ? v2 : v1;
+
+      // Start crossfade 1.5 seconds before the video ends
+      if (currentVid.duration && (currentVid.duration - currentVid.currentTime <= 1.5)) {
+        if (!isTransitioning.current) {
+          isTransitioning.current = true;
+
+          nextVid.currentTime = 0;
+          nextVid.play().catch(() => { });
+
+          activeRef.current = activeRef.current === 1 ? 2 : 1;
+          setActive(activeRef.current);
+
+          setTimeout(() => {
+            currentVid.pause();
+            isTransitioning.current = false;
+          }, 1500);
+        }
+      }
+      rAF = requestAnimationFrame(checkTime);
+    };
+
+    rAF = requestAnimationFrame(checkTime);
+
+    return () => cancelAnimationFrame(rAF);
+  }, []);
+
   return (
-    <div className="wave-bg" aria-hidden="true">
-      <svg className="wave-layer wave-l1" viewBox="0 0 4320 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#5AB0D8" d="M0,400C240,340,480,280,720,300C960,320,1200,400,1440,400C1680,340,1920,280,2160,300C2400,320,2640,400,2880,400C3120,340,3360,280,3600,300C3840,320,4080,400,4320,400L4320,600H0Z" />
-      </svg>
-      <svg className="wave-layer wave-l2" viewBox="0 0 4320 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#7AC4E0" d="M0,360C240,310,480,260,720,280C960,300,1200,360,1440,360C1680,310,1920,260,2160,280C2400,300,2640,360,2880,360C3120,310,3360,260,3600,280C3840,300,4080,360,4320,360L4320,600H0Z" />
-      </svg>
-      <svg className="wave-layer wave-l3" viewBox="0 0 4320 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#93D1EC" d="M0,440C240,400,480,340,720,350C960,360,1200,440,1440,440C1680,400,1920,340,2160,350C2400,360,2640,440,2880,440C3120,400,3360,340,3600,350C3840,360,4080,440,4320,440L4320,600H0Z" />
-      </svg>
-      <svg className="wave-layer wave-l4" viewBox="0 0 4320 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#ADDEF2" d="M0,480C240,460,480,420,720,430C960,440,1200,480,1440,480C1680,460,1920,420,2160,430C2400,440,2640,480,2880,480C3120,460,3360,420,3600,430C3840,440,4080,480,4320,480L4320,600H0Z" />
-      </svg>
-      <svg className="wave-layer wave-l5" viewBox="0 0 4320 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#C8E9F7" d="M0,520C240,510,480,480,720,485C960,490,1200,520,1440,520C1680,510,1920,480,2160,485C2400,490,2640,520,2880,520C3120,510,3360,480,3600,485C3840,490,4080,520,4320,520L4320,600H0Z" />
-      </svg>
+    <div
+      className="fixed inset-0 z-0 overflow-hidden bg-[#e8f6fd] pointer-events-none flex items-center justify-center"
+      aria-hidden="true"
+    >
+      <video
+        ref={vid1}
+        muted
+        playsInline
+        autoPlay
+        loop
+        preload="auto"
+        className={`absolute w-full h-full object-cover scale-[1.15] md:scale-[1.22] lg:scale-[1.30] xl:scale-[1.35] transition-opacity duration-[1500ms] ${active === 1 ? "opacity-100" : "opacity-0"
+          }`}
+      >
+        <source src="/video.mp4" type="video/mp4" />
+      </video>
+
+      <video
+        ref={vid2}
+        muted
+        playsInline
+        autoPlay
+        loop
+        preload="auto"
+        className={`absolute w-full h-full object-cover scale-[1.15] md:scale-[1.22] lg:scale-[1.30] xl:scale-[1.35] transition-opacity duration-[1500ms] ${active === 2 ? "opacity-100" : "opacity-0"
+          }`}
+      >
+        <source src="/video.mp4" type="video/mp4" />
+      </video>
+
+      <div className="absolute inset-0 pointer-events-none bg-white/70" />
     </div>
   );
 }
@@ -78,7 +131,8 @@ function Field({ id, name, label, type, placeholder, autoComplete, error, onClea
         id={id} name={name} type={type}
         placeholder={placeholder} autoComplete={autoComplete} required
         onChange={() => { if (error && onClearError) onClearError(name); }}
-        onInput={type === "tel" ? (e) => { e.target.value = e.target.value.replace(/[^0-9+() \-]/g, ""); } : undefined}
+        onInput={type === "tel" ? (e) => { e.target.value = e.target.value.replace(/[^0-9]/g, ""); } : undefined}
+        maxLength={type === "tel" ? 11 : undefined}
         className="form-field w-full rounded-xl focus:outline-none transition-all duration-200"
         style={{
           height: "clamp(48px, 6vh, 56px)",
@@ -119,10 +173,10 @@ function PageShell({ children, key: pageKey }) {
 
 /* ─── Services data ────────────────────────────────────────────────────── */
 const SERVICES = [
-  { id: "ai", name: "Business Automation", desc: "Streamline repetitive tasks and save time", icon: Cpu },
+  { id: "ai", name: "AI & Business Automation", desc: "Streamline repetitive tasks and save time", icon: Cpu },
   { id: "web", name: "Website & Digital Presence", desc: "Build a strong, conversion-focused online presence", icon: Globe },
-  { id: "crm", name: "Client Management System", desc: "Organize leads, clients, and communications efficiently", icon: Database },
-  { id: "stepup", name: "Business Growth & Performance", desc: "Improve processes, insights, and scalability", icon: Zap },
+  { id: "crm", name: "Client & Sales Management", desc: "Track leads, follow-ups, and customer relationships in one place", icon: Database },
+  { id: "stepup", name: "People & Workforce Systems", desc: "Streamline HR processes, attendance, and performance tracking", icon: Zap },
   { id: "prajek", name: "Project & Workflow Management", desc: "Keep operations structured and on track", icon: Rocket },
 ];
 
@@ -240,12 +294,11 @@ function ServicesPage({ onSelect }) {
 function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onBack, onClearError }) {
   return (
     <PageShell>
-      {/* Scrollable area */}
       <div
         key="form"
         className="page-transition flex-1 flex flex-col w-full max-w-2xl mx-auto overflow-y-auto"
         style={{
-          padding: "clamp(12px, 2vh, 20px) clamp(16px, 5vw, 30px) 0", // smaller top/bottom padding
+          padding: "clamp(12px, 2vh, 20px) clamp(16px, 5vw, 30px) 0",
           minHeight: 0,
         }}
       >
@@ -255,7 +308,7 @@ function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onB
           className="flex items-center gap-1.5 font-semibold transition-all duration-200 hover:opacity-70 shrink-0"
           style={{
             color: "var(--secondaryColor)",
-            fontSize: "clamp(0.7rem, 0.9vw, 0.8rem)", // slightly smaller
+            fontSize: "clamp(0.7rem, 0.9vw, 0.8rem)",
             marginBottom: "clamp(14px, 2vh, 24px)",
             alignSelf: "flex-start",
           }}
@@ -266,17 +319,6 @@ function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onB
 
         {/* Headings */}
         <div className="shrink-0" style={{ marginBottom: "clamp(4px, 1vh, 8px)" }}>
-          <p
-            className="font-bold uppercase"
-            style={{
-              fontSize: "clamp(0.6rem, 0.8vw, 0.7rem)",
-              letterSpacing: "0.2em",
-              color: "var(--accentColor)",
-              marginBottom: "6px",
-            }}
-          >
-            Registration
-          </p>
           <h1
             className="font-extrabold tracking-tight"
             style={{
@@ -336,8 +378,7 @@ function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onB
         }}
       >
         <p className="text-center opacity-60 font-medium mb-4 leading-relaxed" style={{ fontSize: "clamp(0.65rem, 0.8vw, 0.72rem)", color: "var(--secondaryColor)" }}>
-          By connecting, you agree to receive occasional follow-up emails
-          regarding your inquiry. You can unsubscribe at any time.
+          By connecting, you agree to receive follow-up emails about your inquiry. Unsubscribe anytime.
         </p>
 
         <button
@@ -373,7 +414,7 @@ function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onB
 /* ═══════════════════════════════════════════════════════════════════════
    STATE B — Spot Secured!
    ═══════════════════════════════════════════════════════════════════════ */
-function SuccessPage({ onScheduleNow, onScheduleLater }) {
+function SuccessPage({ onScheduleNow, onScheduleLater, onBack }) {
   return (
     <PageShell>
       <div
@@ -381,6 +422,21 @@ function SuccessPage({ onScheduleNow, onScheduleLater }) {
         className="page-transition flex-1 flex flex-col justify-center w-full max-w-2xl mx-auto"
         style={{ padding: "clamp(16px, 3vh, 24px) clamp(20px, 5vw, 40px)", minHeight: 0 }}
       >
+        {/* Back button */}
+        <button
+          onClick={onBack}
+          className="flex items-center gap-1.5 font-semibold transition-all duration-200 hover:opacity-70 shrink-0"
+          style={{
+            color: "var(--secondaryColor)",
+            fontSize: "clamp(0.7rem, 0.9vw, 0.8rem)",
+            marginBottom: "clamp(14px, 2vh, 24px)",
+            alignSelf: "flex-start",
+          }}
+        >
+          <ArrowLeft size={15} strokeWidth={2.5} />
+          Back
+        </button>
+
         <div className="flex items-start gap-4" style={{ marginBottom: "clamp(6px, 1vh, 10px)" }}>
           <div className="shrink-0" style={{ marginTop: "2px" }}>
             <BadgeCheck
@@ -686,7 +742,7 @@ function InboxPage({ onBack, onResend }) {
                 marginTop: "4px",
               }}
             >
-              {resending ? "Sending..." : resent ? "✅ Email Sent" : "Didn't receive it? Resend email"}
+              {resending ? "Sending..." : resent ? "Email Sent" : "Didn't receive it? Resend email"}
             </button>
           </div>
         </div>
@@ -896,11 +952,12 @@ export default function Home() {
     if (!email) {
       errors.email = "Email address is required.";
     } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
-      errors.email = "Please enter a valid email (e.g. alex@gmail.com).";
+      errors.email = "Please enter a valid email (e.g. john@gmail.com).";
     }
-    // Phone is optional and non-strict
-    if (phone && !/^[0-9+() \-]+$/.test(phone)) {
-      // Still show a soft warning if it looks completely wrong, but let's just make it a comment here.
+    if (!phone) {
+      errors.phone = "Phone number is required.";
+    } else if (!/^\d{11}$/.test(phone)) {
+      errors.phone = "Phone number must be exactly 11 digits.";
     }
     if (!company) errors.company = "Company name is required.";
 
@@ -956,8 +1013,8 @@ export default function Home() {
   };
 
   return (
-    <div className="h-screen w-full overflow-hidden relative flex flex-col" style={BG}>
-      <WaveBg />
+    <div className="h-screen w-screen overflow-hidden relative flex flex-col">
+      <VideoBg />
 
       {state === "services" && (
         <ServicesPage onSelect={handleServiceSelect} />
@@ -977,6 +1034,7 @@ export default function Home() {
         <SuccessPage
           onScheduleNow={() => handleBookingChoice("now")}
           onScheduleLater={() => handleBookingChoice("later")}
+          onBack={() => setState("services")}
         />
       )}
       {state === "schedule" && (
