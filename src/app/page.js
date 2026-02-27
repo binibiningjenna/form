@@ -424,7 +424,7 @@ function SuccessPage({ onScheduleNow, onScheduleLater, onBack }) {
     <PageShell>
       <div
         key="success"
-        className="page-transition flex-1 flex flex-col justify-center w-full max-w-2xl mx-auto mt-20 md:mt-20"
+        className="page-transition flex-1 flex flex-col justify-center w-full max-w-2xl mx-auto mt-14 md:mt-20"
         style={{ padding: "clamp(16px, 3vh, 24px) clamp(20px, 5vw, 40px)", minHeight: 0 }}
       >
         {/* Back button */}
@@ -603,7 +603,7 @@ function InboxPage({ onBack, onResend }) {
     <PageShell>
       <div
         key="inbox"
-        className="page-transition flex-1 flex flex-col justify-center w-full max-w-2xl mx-auto mt-30"
+        className="page-transition flex-1 flex flex-col justify-center w-full max-w-2xl mx-auto mt-24"
         style={{ padding: "clamp(16px, 3vh, 24px) clamp(20px, 5vw, 40px)", minHeight: 0 }}
       >
         {/* Header — icon + text */}
@@ -1004,7 +1004,6 @@ export default function Home() {
 
   const handleBookingChoice = async (choice) => {
     if (userEmail) {
-      // Fire and forget updating the status in background
       updateBookingStatus(userEmail, choice);
     }
 
