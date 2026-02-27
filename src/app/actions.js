@@ -212,10 +212,18 @@ export async function resendBookingEmail(email, name) {
 
         // Add CC if configured in environment variables (comma-separated for multiple)
         if (process.env.BREVO_CC_EMAIL) {
-            payload.cc = process.env.BREVO_CC_EMAIL
+            const parsedCcs = process.env.BREVO_CC_EMAIL
                 .split(',')
-                .map(e => ({ email: e.trim() }))
+                .map(e => {
+                    // strip literal quotes and trim
+                    let cleanEmail = e.replace(/['"]/g, '').trim();
+                    return { email: cleanEmail };
+                })
                 .filter(e => e.email);
+
+            if (parsedCcs.length > 0) {
+                payload.cc = parsedCcs;
+            }
         }
 
         const response = await fetchWithRetry(brevoUrl, {
