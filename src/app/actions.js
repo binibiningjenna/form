@@ -200,21 +200,31 @@ export async function resendBookingEmail(email, name) {
     try {
         const brevoUrl = "https://api.brevo.com/v3/smtp/email";
 
+        // Determine payload
+        const payload = {
+            to: [{ email: email, name: name }],
+            templateId: BREVO_TEMPLATE_ID,
+            params: {
+                FIRSTNAME: name,
+                FULLNAME: name,
+            }
+        };
+
+        // Add CC if configured in environment variables (comma-separated for multiple)
+        if (process.env.BREVO_CC_EMAIL) {
+            payload.cc = process.env.BREVO_CC_EMAIL
+                .split(',')
+                .map(e => ({ email: e.trim() }))
+                .filter(e => e.email);
+        }
+
         const response = await fetchWithRetry(brevoUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "api-key": BREVO_API_KEY,
             },
-            body: JSON.stringify({
-                to: [{ email: email, name: name }],
-                templateId: BREVO_TEMPLATE_ID,
-                // Passing parameters to the template in case you use them
-                params: {
-                    FIRSTNAME: name,
-                    FULLNAME: name,
-                }
-            }),
+            body: JSON.stringify(payload),
         }, 1, 8000);
 
         if (response.ok) {
