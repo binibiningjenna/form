@@ -35,6 +35,7 @@ export async function submitLead(formData) {
     const CRM_WEBHOOK_URL = process.env.CRM_WEBHOOK_URL;
     const BREVO_API_KEY = process.env.BREVO_API_KEY;
     const BREVO_LIST_ID = parseInt(process.env.BREVO_LIST_ID || "0");
+    const GOOGLE_SHEET_WEBHOOK_URL = process.env.GOOGLE_SHEET_WEBHOOK_URL;
 
     // 1. CRM Sync Task (Parallel)
     const crmTask = (async () => {
@@ -106,8 +107,33 @@ export async function submitLead(formData) {
         }
     })();
 
-    // Execute both in parallel - total time will be the maximum of the two tasks
-    const [crmOk, brevoResult] = await Promise.all([crmTask, brevoTask]);
+    // 3. Google Sheets Sync Task (Parallel backup)
+    const sheetTask = (async () => {
+        if (!GOOGLE_SHEET_WEBHOOK_URL) return true;
+        try {
+            const res = await fetchWithRetry(GOOGLE_SHEET_WEBHOOK_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    Name: fullName,
+                    Email: email,
+                    Phone: phone,
+                    Company: company,
+                    Service: interestedService,
+                    Status: bookingStatus || "pending",
+                    Source: "Kasalang Tagaytay",
+                    Date: new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
+                }),
+            }, 1, 5000); // 1 retry, 5s timeout
+            return res.ok;
+        } catch (e) {
+            console.error("Sheet Task Error:", e.message);
+            return false;
+        }
+    })();
+
+    // Execute all three in parallel - total time will be the maximum of the tasks
+    const [crmOk, brevoResult, sheetOk] = await Promise.all([crmTask, brevoTask, sheetTask]);
 
     // Handle results
     if (brevoResult.field) {
