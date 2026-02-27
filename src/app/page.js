@@ -527,6 +527,17 @@ function SuccessPage({ onScheduleNow, onScheduleLater }) {
    STATE C — Check Your Inbox
    ═══════════════════════════════════════════════════════════════════════ */
 function InboxPage({ onBack, onResend }) {
+  const [resending, setResending] = useState(false);
+  const [resent, setResent] = useState(false);
+
+  const handleResend = async () => {
+    if (resending || resent) return;
+    setResending(true);
+    await onResend();
+    setResending(false);
+    setResent(true);
+  };
+
   return (
     <PageShell>
       <div
@@ -661,12 +672,13 @@ function InboxPage({ onBack, onResend }) {
             </button>
             <button
               id="resend-email-btn"
-              onClick={onResend}
-              className="font-semibold opacity-50 transition-all duration-200 hover:opacity-100 active:scale-95 active:opacity-100"
+              onClick={handleResend}
+              disabled={resending || resent}
+              className="font-semibold opacity-50 transition-all duration-200 hover:opacity-100 active:scale-95 active:opacity-100 disabled:cursor-not-allowed disabled:hover:opacity-50"
               style={{
-                color: "var(--primaryColor)",
+                color: resent ? "var(--accentColor)" : "var(--primaryColor)",
                 fontSize: "clamp(0.72rem, 0.92vw, 0.82rem)",
-                textDecoration: "underline",
+                textDecoration: resent ? "none" : "underline",
                 textDecorationColor:
                   "color-mix(in srgb, var(--primaryColor) 25%, transparent)",
                 textUnderlineOffset: "3px",
@@ -674,7 +686,7 @@ function InboxPage({ onBack, onResend }) {
                 marginTop: "4px",
               }}
             >
-              Didn&apos;t receive it? Resend email
+              {resending ? "Sending..." : resent ? "✅ Email Sent" : "Didn't receive it? Resend email"}
             </button>
           </div>
         </div>
@@ -682,7 +694,6 @@ function InboxPage({ onBack, onResend }) {
     </PageShell>
   );
 }
-
 /* ═══════════════════════════════════════════════════════════════════════
    STATE D — Cal.com Schedule Page
    ═══════════════════════════════════════════════════════════════════════ */
@@ -837,7 +848,7 @@ function SchedulePage({ onBack, email, name }) {
   );
 }
 
-import { submitLead, updateBookingStatus } from "./actions";
+import { submitLead, updateBookingStatus, resendBookingEmail } from "./actions";
 
 /* ─── Root ─────────────────────────────────────────────────────────────── */
 export default function Home() {
@@ -978,7 +989,11 @@ export default function Home() {
       {state === "inbox" && (
         <InboxPage
           onBack={() => setState("services")}
-          onResend={() => alert("Email resent!")}
+          onResend={async () => {
+            if (userEmail && userFullName) {
+              await resendBookingEmail(userEmail, userFullName);
+            }
+          }}
         />
       )}
     </div>

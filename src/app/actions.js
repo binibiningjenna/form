@@ -150,3 +150,49 @@ export async function updateBookingStatus(email, status) {
         return { success: false, error: err.message };
     }
 }
+
+/**
+ * Resends the booking email via Brevo Transactional Email.
+ * Requires BREVO_TEMPLATE_ID to be set in the .env file.
+ */
+export async function resendBookingEmail(email, name) {
+    const BREVO_API_KEY = process.env.BREVO_API_KEY;
+    const BREVO_TEMPLATE_ID = parseInt(process.env.BREVO_TEMPLATE_ID || "0");
+
+    if (!BREVO_API_KEY) return { success: false, error: "API Key missing" };
+    if (!BREVO_TEMPLATE_ID) return { success: false, error: "Template ID is missing. Please configure BREVO_TEMPLATE_ID." };
+
+    try {
+        const brevoUrl = "https://api.brevo.com/v3/smtp/email";
+
+        const response = await fetchWithRetry(brevoUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "api-key": BREVO_API_KEY,
+            },
+            body: JSON.stringify({
+                to: [{ email: email, name: name }],
+                templateId: BREVO_TEMPLATE_ID,
+                // Passing parameters to the template in case you use them
+                params: {
+                    FIRSTNAME: name,
+                    FULLNAME: name,
+                }
+            }),
+        }, 1, 8000);
+
+        if (response.ok) {
+            console.log(`Resend Email Triggered: ${email} for template ${BREVO_TEMPLATE_ID}`);
+            return { success: true };
+        } else {
+            const errData = await response.json();
+            console.error("Brevo Resend Error:", errData);
+            return { success: false, error: errData.message };
+        }
+
+    } catch (err) {
+        console.error("Resend Email Error:", err.message);
+        return { success: false, error: err.message };
+    }
+}
