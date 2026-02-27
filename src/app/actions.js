@@ -117,6 +117,15 @@ export async function submitLead(formData) {
     if (crmOk || brevoResult.success) {
         if (crmOk) console.log("Direct CRM Sync: Parallel Success");
         if (brevoResult.success) console.log("Direct Brevo Sync: Parallel Success");
+
+        // Auto-send the Day 0 transactional email to guarantee Primary Inbox delivery
+        try {
+            await resendBookingEmail(email, fullName);
+            console.log("Day 0 Transactional Email dispatched.");
+        } catch (err) {
+            console.error("Failed to auto-send Day 0 email:", err);
+        }
+
         return { success: true };
     }
 
