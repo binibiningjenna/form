@@ -108,10 +108,12 @@ export async function submitLead(formData) {
     })();
 
     // 3. Google Sheets Sync Task (Parallel backup)
+    // We declare this but DO NOT await it in the Promise.all below. 
+    // This allows it to run in the background (fire-and-forget) without slowing down the user's loading screen.
     const sheetTask = (async () => {
-        if (!GOOGLE_SHEET_WEBHOOK_URL) return true;
+        if (!GOOGLE_SHEET_WEBHOOK_URL) return;
         try {
-            const res = await fetchWithRetry(GOOGLE_SHEET_WEBHOOK_URL, {
+            await fetchWithRetry(GOOGLE_SHEET_WEBHOOK_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -124,16 +126,14 @@ export async function submitLead(formData) {
                     Source: "Kasalang Tagaytay",
                     Date: new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
                 }),
-            }, 1, 5000); // 1 retry, 5s timeout
-            return res.ok;
+            }, 1, 5000);
         } catch (e) {
             console.error("Sheet Task Error:", e.message);
-            return false;
         }
     })();
 
-    // Execute all three in parallel - total time will be the maximum of the tasks
-    const [crmOk, brevoResult, sheetOk] = await Promise.all([crmTask, brevoTask, sheetTask]);
+    // Execute only CRM and Brevo in parallel so the user isn't forced to wait for Google Sheets
+    const [crmOk, brevoResult] = await Promise.all([crmTask, brevoTask]);
 
     // Handle results
     if (brevoResult.field) {
