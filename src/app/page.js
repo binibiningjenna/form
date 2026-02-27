@@ -157,16 +157,24 @@ function Field({ id, name, label, type, placeholder, autoComplete, error, onClea
 }
 
 /* ─── Page shell ───────────────────────────────────────────────────────── */
-function PageShell({ children, key: pageKey }) {
+function PageShell({ children }) {
   return (
     <div
-      className="relative z-10 flex-1 w-full flex flex-col items-center animate-fade-in-up"
+      className="relative z-10 w-full h-screen flex flex-col overflow-hidden items-center"
       style={{ padding: "clamp(16px, 3vh, 32px) clamp(20px, 4vw, 32px) 0" }}
     >
+      {/* Logo stays top */}
       <div className="shrink-0 w-full flex justify-center">
         <Logo />
       </div>
-      {children}
+
+      {/* Scroll area */}
+      <div className="flex-1 min-h-0 w-full overflow-y-auto">
+        {/* Centered content wrapper */}
+        <div className="w-full max-w-2xl mx-auto flex flex-col items-center">
+          {children}
+        </div>
+      </div>
     </div>
   );
 }
@@ -188,7 +196,7 @@ function ServicesPage({ onSelect }) {
     <PageShell>
       <div
         key="services"
-        className="page-transition flex-1 flex flex-col items-center w-full max-w-md sm:max-w-lg lg:max-w-xl"
+        className="page-transition flex flex-col items-center w-full max-w-md sm:max-w-lg lg:max-w-xl"
         style={{
           padding: "clamp(8px, 1.5vh, 20px) 0",
           overflowY: "auto",
@@ -369,12 +377,12 @@ function FormPage({ onSubmit, submitting, fieldErrors = {}, selectedService, onB
         </form>
       </div>
 
-      {/* Fixed bottom bar */}
       <div
-        className="shrink-0 w-full max-w-2xl mx-auto flex flex-col items-center"
+        className="shrink-0 w-full max-w-2xl mx-auto flex flex-col items-center pt-6 md:pt-20 lg:pt-30"
         style={{
-          padding: "clamp(24px, 2vh, 24px) clamp(20px, 5vw, 40px) clamp(72px, 10vh, 96px)",
-          // borderTop: "1px solid rgba(0,62,134,0.06)",
+          paddingLeft: "clamp(20px, 5vw, 40px)",
+          paddingRight: "clamp(20px, 5vw, 40px)",
+          paddingBottom: "clamp(40px,6vh,64px)",
         }}
       >
         <p className="text-center opacity-60 font-medium mb-4 leading-relaxed" style={{ fontSize: "clamp(0.65rem, 0.8vw, 0.72rem)", color: "var(--secondaryColor)" }}>
@@ -959,7 +967,7 @@ export default function Home() {
     } else if (!/^\d{11}$/.test(phone)) {
       errors.phone = "Phone number must be exactly 11 digits.";
     }
-    if (!company) errors.company = "Company name is required.";
+    if (!company) errors.company = "Business name is required.";
 
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
